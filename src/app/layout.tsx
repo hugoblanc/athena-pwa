@@ -4,6 +4,7 @@ import "./globals.css";
 import { AppShell } from "@/components/shell/app-shell";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { ServiceWorkerRegistrar } from "@/components/pwa/service-worker-registrar";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -26,6 +27,11 @@ export const metadata: Metadata = {
   description:
     "Suivez et recevez l'actualité des médias indépendants. Articles, vidéos, podcasts, propositions de loi et questions à l'IA.",
   applicationName: "Athena",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: "/icons/icon-192.png",
+    apple: "/icons/apple-touch-icon.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -56,6 +62,7 @@ export default function RootLayout({
             <AppShell>{children}</AppShell>
           </AuthProvider>
         </ThemeProvider>
+        <ServiceWorkerRegistrar />
       </body>
     </html>
   );
