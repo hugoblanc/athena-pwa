@@ -1,26 +1,181 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ============================================================
+   ATHENA — Design System « Signal »
+   Tokens calés sur design-spike/DESIGN_SYSTEM.md §5
+   Dark-first ; bascule clair/sombre via next-themes (data-theme).
+   ============================================================ */
+
+/* dark variant piloté par l'attribut data-theme (next-themes) */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  /* marque — orange Athena (constant) */
+  --color-brand-50: #fff3ee;
+  --color-brand-100: #ffe1d5;
+  --color-brand-300: #ffa67b;
+  --color-brand-500: #fc743a;
+  --color-brand-600: #e8551b;
+  --color-brand-700: #c2410c;
+
+  /* polices (next/font injecte les variables) */
+  --font-display: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  --radius-sm: 7px;
+  --radius: 14px;
+  --radius-lg: 16px;
 }
 
+/* ---- tokens sémantiques : DARK par défaut ---- */
+:root,
+[data-theme="dark"] {
+  --bg: #0a0a0f;
+  --surface: #14141c;
+  --surface-2: #1c1c26;
+  --border: #26262f;
+  --text: #f4f4f6;
+  --text-dim: #9a9aa8;
+  --text-faint: #5c5c68;
+  --tag-bg: #1f1f2a;
+  --tag-text: #c7c7d4;
+  --tag-text-orange: #f0915f;
+  --primary: #fc743a;
+  --primary-hover: #e8551b;
+  --on-primary: #ffffff;
+  --focus: #fc743a;
+  --success: #4caf50;
+  --danger: #ef5350;
+  --elev-1: 0 2px 16px rgba(0, 0, 0, 0.5);
+  --elev-2: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="light"] {
+  --bg: #fafafb;
+  --surface: #ffffff;
+  --surface-2: #f3f3f6;
+  --border: #e6e6ec;
+  --text: #14141c;
+  --text-dim: #6b6b78;
+  --text-faint: #a0a0ac;
+  --tag-bg: #f1f1f5;
+  --tag-text: #4a4a57;
+  --tag-text-orange: #c2410c;
+  --primary: #fc743a;
+  --primary-hover: #e8551b;
+  --on-primary: #ffffff;
+  --focus: #fc743a;
+  --success: #2e7d32;
+  --danger: #d32f2f;
+  --elev-1: 0 2px 14px rgba(20, 20, 28, 0.06);
+  --elev-2: 0 10px 30px rgba(20, 20, 28, 0.12);
+}
+
+/* expose les tokens sémantiques comme couleurs/utilitaires Tailwind */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-text-dim: var(--text-dim);
+  --color-text-faint: var(--text-faint);
+  --color-tag-bg: var(--tag-bg);
+  --color-tag-text: var(--tag-text);
+  --color-tag-text-orange: var(--tag-text-orange);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --shadow-elev-1: var(--elev-1);
+  --shadow-elev-2: var(--elev-2);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* focus clavier cohérent partout */
+:where(button, a, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ---- styles éditoriaux « prose » (corps d'article + pages statiques) ---- */
+.prose {
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.7;
+}
+.prose > * + * {
+  margin-top: 1.1em;
+}
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-top: 1.6em;
+  line-height: 1.25;
+}
+.prose h2 {
+  font-size: 1.5em;
+}
+.prose h3 {
+  font-size: 1.25em;
+}
+.prose a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.4em;
+}
+.prose ul {
+  list-style: disc;
+}
+.prose ol {
+  list-style: decimal;
+}
+.prose blockquote {
+  border-left: 3px solid var(--primary);
+  padding-left: 1em;
+  color: var(--text-dim);
+  font-style: italic;
+}
+.prose img,
+.prose iframe {
+  border-radius: var(--radius);
+  max-width: 100%;
+  height: auto;
+}
+.prose iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+.prose code {
+  background: var(--surface-2);
+  padding: 0.1em 0.4em;
+  border-radius: 5px;
+  font-size: 0.9em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
