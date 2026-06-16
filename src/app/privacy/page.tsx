@@ -51,6 +51,22 @@ export default function PrivacyPage() {
         </li>
       </ul>
 
+      <h2 id="mesure-audience">Mesure d&apos;audience (anonyme et agrégée)</h2>
+      <p>
+        Pour comprendre comment les contenus partagés circulent, Athena compte
+        des événements <strong>agrégés et anonymes</strong> : nombre de pages de
+        partage vues et nombre de re-partages, par contenu et par jour.{" "}
+        <strong>
+          Aucun identifiant personnel, aucun profil et aucun cookie publicitaire
+        </strong>{" "}
+        ne sont créés. Votre adresse IP n&apos;est jamais stockée : elle sert
+        uniquement, le temps d&apos;une requête, à calculer une empreinte
+        quotidienne non réversible qui évite de compter deux fois la même visite,
+        puis elle est oubliée. Nous ne conservons que des compteurs (des
+        nombres), jamais de trace individuelle. Si votre navigateur envoie le
+        signal <em>« Do Not Track »</em>, cette mesure est désactivée.
+      </p>
+
       <h2 id="conservation">Conservation</h2>
       <p>
         Les données de compte sont conservées tant que le compte existe. Vous

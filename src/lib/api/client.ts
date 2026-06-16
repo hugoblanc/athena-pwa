@@ -50,7 +50,13 @@ export async function apiGet<T>(
   if (!res.ok) {
     throw new ApiError(res.status, path, await safeText(res));
   }
-  return (await res.json()) as T;
+  // Un 2xx au corps vide (ressource absente côté API) ne doit pas crasher en
+  // « Unexpected end of JSON input » : on lève une erreur explicite.
+  const body = await res.text();
+  if (!body) {
+    throw new ApiError(res.status, path, `Réponse vide sur ${path}`);
+  }
+  return JSON.parse(body) as T;
 }
 
 async function safeText(res: Response): Promise<string | undefined> {

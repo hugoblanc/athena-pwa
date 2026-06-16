@@ -12,9 +12,11 @@ import type { LawProposal } from "@/lib/api/types";
 export function LawProposalHeader({
   proposal,
   shareUrl,
+  shareRefId,
 }: {
   proposal: LawProposal;
   shareUrl: string;
+  shareRefId: string;
 }) {
   const isConstit = proposal.typeProposition === "constitutionnelle";
 
@@ -31,6 +33,7 @@ export function LawProposalHeader({
         <ShareButton
           data={{ title: proposal.titre, url: shareUrl }}
           variant="icon"
+          tracking={{ refType: "law", refId: shareRefId }}
         />
       </div>
 

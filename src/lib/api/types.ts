@@ -56,6 +56,10 @@ export interface ShareableContentResponse {
   image: { url: string; width: number; height: number };
   title: string;
   originalUrl: string;
+  /** Média source — évite un 2e appel `getMetaMedias()` sur le SSR de partage. */
+  mediaTitle: string;
+  mediaType: string;
+  mediaLogoUrl: string | null;
 }
 
 // ───────────────────────── Podcast ─────────────────────────

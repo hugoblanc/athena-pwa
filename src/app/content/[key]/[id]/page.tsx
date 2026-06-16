@@ -8,20 +8,26 @@ import { Button } from "@/components/ui/button";
 import { ShareButton } from "@/components/ui/share-button";
 import { Tag } from "@/components/ui/tag";
 import { ApiError } from "@/lib/api/client";
-import { getContent, getShareableContent } from "@/lib/api/content";
+import {
+  getContent,
+  getShareableContent,
+  resolveContentId,
+} from "@/lib/api/content";
 import type { Content, ShareableContentResponse } from "@/lib/api/types";
 import { formatDate } from "@/lib/format";
+import { buildShareUrl, sharePath } from "@/lib/site";
 
 interface PageParams {
   key: string;
   id: string;
 }
 
-/** Résout le contenu depuis le `contentId` de l'URL (stratégie a : `getContent`
- *  accepte `string | number`, l'API résout directement). 404 → notFound. */
-async function loadContent(id: string): Promise<Content> {
+/** Résout le contenu depuis (clé média, `contentId` de l'URL) : d'abord l'id
+ *  interne, puis le détail. 404 → notFound. */
+async function loadContent(key: string, contentId: string): Promise<Content> {
   try {
-    return await getContent(id);
+    const internalId = await resolveContentId(key, contentId);
+    return await getContent(internalId);
   } catch (err) {
     if (err instanceof ApiError && err.status === 404) notFound();
     throw err;
@@ -92,7 +98,7 @@ export default async function ContentDetailPage({
 
   // Fetchs serveur parallélisés (memoïsés avec generateMetadata).
   const [content, share] = await Promise.all([
-    loadContent(id),
+    loadContent(key, id),
     loadShareable(key, id),
   ]);
 
@@ -103,7 +109,7 @@ export default async function ContentDetailPage({
   const originalUrl = share?.originalUrl;
   const minutes = readingTime(content);
   const href = `/content/${key}/${id}`;
-  const shareUrl = `/share/${key}/${id}`;
+  const shareUrl = buildShareUrl(sharePath.content(key, id));
 
   return (
     <article className="mx-auto max-w-[640px] px-5 pt-4 pb-16 lg:pt-6">
@@ -168,6 +174,7 @@ export default async function ContentDetailPage({
         <ShareButton
           variant="button"
           data={{ title: content.title, url: shareUrl }}
+          tracking={{ refType: "content", refId: id }}
         />
         {originalUrl && (
           <Button

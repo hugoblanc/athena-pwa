@@ -130,6 +130,7 @@ export function QaMessage({
                 data={{ title: "Réponse d'Athena", text: answer, url: typeof window !== "undefined" ? window.location.href : "" }}
                 variant="button"
                 label="Partager"
+                tracking={{ refType: "qa", refId: "chat" }}
               />
             </div>
           )}

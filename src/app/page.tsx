@@ -54,7 +54,7 @@ export default async function FeedPage({
   }
 
   return (
-    <div className="mx-auto max-w-[640px] px-5 pt-4 lg:pt-6">
+    <div className="mx-auto max-w-5xl px-5 pt-4 lg:pt-6">
       <h1 className="mb-4 font-display text-[28px] font-extrabold tracking-[-0.02em]">
         Fil d&apos;actu
       </h1>

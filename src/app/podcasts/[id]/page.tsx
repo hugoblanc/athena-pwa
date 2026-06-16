@@ -7,6 +7,7 @@ import { PodcastTranscript } from "@/components/podcast/podcast-transcript";
 import { Tag } from "@/components/ui/tag";
 import { ShareButton } from "@/components/ui/share-button";
 import { formatDate } from "@/lib/format";
+import { buildShareUrl, sharePath } from "@/lib/site";
 import {
   getNextPodcast,
   getPodcast,
@@ -68,7 +69,7 @@ export default async function PodcastDetailPage({
       ? `/content/${sourceKey}/${content.contentId}`
       : null;
 
-  const shareUrl = `/podcasts/${podcast.id}`;
+  const shareUrl = buildShareUrl(sharePath.podcast(podcast.id));
 
   return (
     <div className="mx-auto max-w-[640px] px-5 pb-32 pt-4 lg:pt-6">
@@ -84,6 +85,7 @@ export default async function PodcastDetailPage({
           data={{ title, url: shareUrl }}
           variant="icon"
           label="Partager ce podcast"
+          tracking={{ refType: "podcast", refId: String(podcast.id) }}
         />
       </div>
 

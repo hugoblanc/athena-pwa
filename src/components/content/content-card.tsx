@@ -69,7 +69,7 @@ export function HeroCard({
         className,
       )}
     >
-      <div className="relative h-[184px] bg-gradient-to-br from-brand-500/85 to-brand-600/55">
+      <div className="relative h-[184px] bg-gradient-to-br from-brand-500/85 to-brand-600/55 lg:h-[340px]">
         {data.image && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={data.image} alt="" className="size-full object-cover" />

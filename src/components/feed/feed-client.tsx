@@ -184,7 +184,7 @@ export function FeedClient({
             </h2>
           )}
 
-          <div className="flex flex-col gap-3">
+          <div className="grid gap-3 lg:grid-cols-2">
             {rest.map((c) => (
               <ContentCard key={c.id} data={toCardData(c)} />
             ))}

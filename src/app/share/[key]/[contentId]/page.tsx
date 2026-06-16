@@ -4,12 +4,9 @@ import { cache } from "react";
 import { SharePreview } from "@/components/share/share-preview";
 import { ShareContinueCard } from "@/components/share/share-continue-card";
 import { getShareableContent } from "@/lib/api/content";
-import { getMetaMedias } from "@/lib/api/meta-media";
 import { ApiError } from "@/lib/api/client";
-import type {
-  MetaMedia,
-  ShareableContentResponse,
-} from "@/lib/api/types";
+import { absoluteUrl, sharePath } from "@/lib/site";
+import type { ShareableContentResponse } from "@/lib/api/types";
 
 interface ShareParams {
   params: Promise<{ key: string; contentId: string }>;
@@ -35,20 +32,6 @@ const loadShareable = cache(
   },
 );
 
-/** Résout le média source par sa clé (logo + titre), sans bloquer si absent. */
-const loadMedia = cache(async (key: string): Promise<MetaMedia | null> => {
-  try {
-    const groups = await getMetaMedias();
-    for (const g of groups) {
-      const found = g.metaMedias.find((m) => m.key === key);
-      if (found) return found;
-    }
-    return null;
-  } catch {
-    return null;
-  }
-});
-
 export async function generateMetadata({
   params,
 }: ShareParams): Promise<Metadata> {
@@ -63,9 +46,8 @@ export async function generateMetadata({
     };
   }
 
-  const media = await loadMedia(key);
-  const description = media
-    ? `Partagé depuis ${media.title} · à lire et écouter sur Athena.`
+  const description = data.mediaTitle
+    ? `Partagé depuis ${data.mediaTitle} · à lire et écouter sur Athena.`
     : "À lire et écouter sur Athena, l'agrégateur des médias libres.";
   const image = data.image?.url
     ? [{ url: data.image.url, width: data.image.width, height: data.image.height }]
@@ -79,7 +61,9 @@ export async function generateMetadata({
       title: data.title,
       description,
       siteName: "Athena",
-      url: data.originalUrl || undefined,
+      // URL canonique Athena (pas l'URL du média externe) : le clic doit
+      // ramener sur la landing de partage, pas quitter vers la source.
+      url: absoluteUrl(sharePath.content(key, contentId)),
       images: image,
     },
     twitter: {
@@ -97,8 +81,7 @@ export default async function SharePage({ params }: ShareParams) {
 
   if (!data) notFound();
 
-  const media = await loadMedia(key);
-  const isVideo = media?.type === "YOUTUBE";
+  const isVideo = data.mediaType === "YOUTUBE";
   const contentHref = `/content/${key}/${contentId}`;
 
   return (
@@ -106,10 +89,15 @@ export default async function SharePage({ params }: ShareParams) {
       <SharePreview
         data={data}
         contentHref={contentHref}
-        source={media?.title}
+        source={data.mediaTitle}
         isVideo={isVideo}
       />
-      <ShareContinueCard />
+      <ShareContinueCard
+        refType="content"
+        refId={contentId}
+        sharePath={sharePath.content(key, contentId)}
+        title={data.title}
+      />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { SimplifiedView } from "@/components/law/simplified-view";
 import { getLawProposal } from "@/lib/api/law-proposal";
 import { ApiError } from "@/lib/api/client";
 import type { LawProposal } from "@/lib/api/types";
+import { buildShareUrl, sharePath } from "@/lib/site";
 
 async function fetchProposal(numero: string): Promise<LawProposal> {
   try {
@@ -49,7 +50,11 @@ export default async function PropositionDetailPage({
 
   return (
     <div className="mx-auto max-w-[640px] px-5 pt-4 pb-10 lg:pt-6">
-      <LawProposalHeader proposal={proposal} shareUrl={`/propositions/${proposal.numero}`} />
+      <LawProposalHeader
+        proposal={proposal}
+        shareUrl={buildShareUrl(sharePath.law(proposal.numero))}
+        shareRefId={String(proposal.numero)}
+      />
 
       {/* auteur */}
       <section className="mt-5" aria-label="Auteur">

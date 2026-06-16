@@ -5,6 +5,7 @@ import { AppShell } from "@/components/shell/app-shell";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ServiceWorkerRegistrar } from "@/components/pwa/service-worker-registrar";
+import { SITE_ORIGIN } from "@/lib/site";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -20,6 +21,8 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
+  // Résout les URLs OG/canonical relatives en absolu (sinon cartes de partage cassées).
+  metadataBase: SITE_ORIGIN,
   title: {
     default: "Athena — Médias libres",
     template: "%s · Athena",

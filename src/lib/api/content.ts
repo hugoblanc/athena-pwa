@@ -5,11 +5,17 @@ import {
   type ContentPage,
   type UnifiedPage,
 } from "./pagination";
+import { decodeEntities } from "../text";
 import type {
   Content,
   ContentLite,
   ShareableContentResponse,
 } from "./types";
+
+/** Décode les entités HTML du titre (titres WordPress : `l&rsquo;…`). */
+function decodeTitle<T extends { title: string }>(c: T): T {
+  return { ...c, title: decodeEntities(c.title) };
+}
 
 /** Feed agrégé paginé. `GET /content/last` */
 export async function getLastContent(params: {
@@ -27,12 +33,31 @@ export async function getLastContent(params: {
     },
     ...CACHE.list,
   });
-  return fromContentPage(res);
+  const page = fromContentPage(res);
+  return { ...page, items: page.items.map(decodeTitle) };
 }
 
-/** Détail d'un contenu. `GET /content/:id` */
-export function getContent(id: number | string): Promise<Content> {
-  return apiGet<Content>(`/content/${id}`, CACHE.detail);
+/** Détail d'un contenu par son id INTERNE (clé primaire). `GET /content/:id` */
+export async function getContent(id: number): Promise<Content> {
+  return decodeTitle(await apiGet<Content>(`/content/${id}`, CACHE.detail));
+}
+
+/**
+ * Résout l'id interne d'un contenu depuis (clé média, `contentId` source).
+ * `/content/:id` attend la clé primaire numérique, PAS le `contentId` source
+ * (non numérique côté YouTube, et un `contentId` WordPress numérique tombe sur
+ * une mauvaise/aucune ligne) → on passe par cet endpoint de résolution.
+ * `GET /content/get-id-from-content-id-and-media-key/:key/:contentId`
+ */
+export async function resolveContentId(
+  key: string,
+  contentId: string,
+): Promise<number> {
+  const res = await apiGet<{ id: number }>(
+    `/content/get-id-from-content-id-and-media-key/${key}/${contentId}`,
+    CACHE.detail,
+  );
+  return res.id;
 }
 
 /**
@@ -47,15 +72,24 @@ export async function getContentByMediaKey(
     `/content/mediakey/${mediaKey}/page/${page}`,
     CACHE.list,
   );
-  return fromContentPage(res);
+  const unified = fromContentPage(res);
+  return { ...unified, items: unified.items.map(decodeTitle) };
 }
 
 /** Métadonnées de partage (OG). `GET /content/get-shareable-content/:key/:contentId` */
-export function getShareableContent(
+export async function getShareableContent(
   key: string,
   contentId: string,
 ): Promise<ShareableContentResponse> {
-  return apiGet(`/content/get-shareable-content/${key}/${contentId}`, CACHE.detail);
+  const res = await apiGet<ShareableContentResponse>(
+    `/content/get-shareable-content/${key}/${contentId}`,
+    CACHE.detail,
+  );
+  return {
+    ...res,
+    title: decodeEntities(res.title),
+    mediaTitle: res.mediaTitle ? decodeEntities(res.mediaTitle) : res.mediaTitle,
+  };
 }
 
 /** URL audio (TTS) d'un contenu. `GET /content/get-audio-content-url-by-id/:id` */
