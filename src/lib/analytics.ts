@@ -10,7 +10,11 @@
 
 import type { ShareRef, ShareRefType } from "@/lib/site";
 
-export type AnalyticsEvent = "preview_view" | "value_reached" | "reshare";
+export type AnalyticsEvent =
+  | "preview_view"
+  | "value_reached"
+  | "reshare"
+  | "install";
 
 export interface TrackProps {
   refType: ShareRefType;

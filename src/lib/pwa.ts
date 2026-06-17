@@ -32,3 +32,41 @@ export function isInAppBrowser(): boolean {
     ua,
   );
 }
+
+/** `true` sur Android (où `beforeinstallprompt` et getInstalledRelatedApps existent). */
+export function isAndroid(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return /android/i.test(navigator.userAgent);
+}
+
+/** `true` sur mobile (iOS ou Android) — la cible du push install. */
+export function isMobile(): boolean {
+  return isIOS() || isAndroid();
+}
+
+interface RelatedApp {
+  platform?: string;
+  url?: string;
+  id?: string;
+}
+
+/**
+ * Détection FORTE « la PWA est déjà installée » via
+ * `navigator.getInstalledRelatedApps()` (Chrome Android uniquement, origine
+ * sécurisée, nécessite `related_applications` dans le manifest). Renvoie `false`
+ * si l'API est absente (iOS, Firefox, desktop) → on ne peut alors PAS conclure
+ * « installée » et on retombe sur les autres signaux (standalone, beforeinstallprompt).
+ */
+export async function isRelatedAppInstalled(): Promise<boolean> {
+  if (typeof navigator === "undefined") return false;
+  const nav = navigator as Navigator & {
+    getInstalledRelatedApps?: () => Promise<RelatedApp[]>;
+  };
+  if (typeof nav.getInstalledRelatedApps !== "function") return false;
+  try {
+    const apps = await nav.getInstalledRelatedApps();
+    return Array.isArray(apps) && apps.length > 0;
+  } catch {
+    return false;
+  }
+}

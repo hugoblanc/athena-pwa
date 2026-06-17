@@ -12,6 +12,8 @@ export interface SharePreviewProps {
   source?: string;
   /** Type de contenu pour le badge + CTA. */
   isVideo?: boolean;
+  /** Affiche les boutons d'action internes. `false` quand le funnel les porte. */
+  showActions?: boolean;
 }
 
 /**
@@ -25,6 +27,7 @@ export function SharePreview({
   contentHref,
   source,
   isVideo = false,
+  showActions = true,
 }: SharePreviewProps) {
   const cta = isVideo ? "Regarder la vidéo" : "Lire l'article";
 
@@ -59,32 +62,34 @@ export function SharePreview({
           {data.title}
         </h1>
 
-        <div className="mt-4 flex flex-col gap-2.5 sm:flex-row sm:items-center">
-          <Button
-            render={<Link href={contentHref} />}
-            className="w-full sm:w-auto"
-          >
-            <Play />
-            {cta} dans Athena
-          </Button>
-
-          {data.originalUrl && (
+        {showActions && (
+          <div className="mt-4 flex flex-col gap-2.5 sm:flex-row sm:items-center">
             <Button
-              variant="ghost"
-              render={
-                <a
-                  href={data.originalUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                />
-              }
+              render={<Link href={contentHref} />}
               className="w-full sm:w-auto"
             >
-              Source originale
-              <ArrowUpRight />
+              <Play />
+              {cta} dans Athena
             </Button>
-          )}
-        </div>
+
+            {data.originalUrl && (
+              <Button
+                variant="ghost"
+                render={
+                  <a
+                    href={data.originalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                }
+                className="w-full sm:w-auto"
+              >
+                Source originale
+                <ArrowUpRight />
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </article>
   );

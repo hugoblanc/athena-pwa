@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { SharePreview } from "@/components/share/share-preview";
-import { ShareContinueCard } from "@/components/share/share-continue-card";
+import { ShareFunnel } from "@/components/share/share-funnel";
 import { getShareableContent } from "@/lib/api/content";
 import { ApiError } from "@/lib/api/client";
 import { absoluteUrl, sharePath } from "@/lib/site";
@@ -85,18 +85,21 @@ export default async function SharePage({ params }: ShareParams) {
   const contentHref = `/content/${key}/${contentId}`;
 
   return (
-    <div className="mx-auto max-w-[640px] px-5 pt-4 lg:px-8 lg:pt-8">
+    <div className="mx-auto max-w-[560px] px-5 pt-5 lg:pt-8">
       <SharePreview
         data={data}
         contentHref={contentHref}
         source={data.mediaTitle}
         isVideo={isVideo}
+        showActions={false}
       />
-      <ShareContinueCard
+      <ShareFunnel
         refType="content"
         refId={contentId}
         sharePath={sharePath.content(key, contentId)}
         title={data.title}
+        contentHref={contentHref}
+        isVideo={isVideo}
       />
     </div>
   );
