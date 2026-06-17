@@ -164,7 +164,9 @@ export default async function ContentDetailPage({
       <div className="mb-6 flex flex-wrap items-center gap-2.5">
         <ListenButton
           track={{
-            id: id,
+            // id INTERNE (pas le contentId source) : l'endpoint audio TTS
+            // attend la clé primaire numérique.
+            id: String(content.id),
             title: content.title,
             source: sourceTitle,
             artwork: heroImage,
