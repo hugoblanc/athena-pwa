@@ -34,7 +34,8 @@ export const sharePath = {
   content: (key: string, contentId: string | number) =>
     `/share/${key}/${contentId}`,
   podcast: (id: string | number) => `/podcasts/${id}`,
-  law: (numero: string | number) => `/propositions/${numero}`,
+  /** Alias court partageable (rewrite vers /propositions/[numero]). */
+  law: (numero: string | number) => `/loi/${numero}`,
 } as const;
 
 /**

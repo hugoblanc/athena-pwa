@@ -8,8 +8,9 @@ import { OfficialView } from "@/components/law/official-view";
 import { SimplifiedView } from "@/components/law/simplified-view";
 import { getLawProposal } from "@/lib/api/law-proposal";
 import { ApiError } from "@/lib/api/client";
+import { API_BASE_URL } from "@/lib/api/config";
 import type { LawProposal } from "@/lib/api/types";
-import { buildShareUrl, sharePath } from "@/lib/site";
+import { absoluteUrl, buildShareUrl, sharePath } from "@/lib/site";
 
 async function fetchProposal(numero: string): Promise<LawProposal> {
   try {
@@ -28,9 +29,32 @@ export async function generateMetadata({
   const { numero } = await params;
   try {
     const p = await getLawProposal(numero);
+    const description =
+      p.simplified?.keyPoints?.[0] ?? p.description ?? undefined;
+    // URL canonique = alias court /loi (consolide le SEO entre /loi et /propositions).
+    const canonical = absoluteUrl(sharePath.law(p.numero));
+    // Image OG générée et servie par l'API (cache volume).
+    const ogImage = `${API_BASE_URL}/law-proposal/${encodeURIComponent(
+      String(p.numero),
+    )}/og.png`;
     return {
       title: `${p.titre} — Proposition n°${p.numero}`,
-      description: p.simplified?.keyPoints?.[0] ?? p.description ?? undefined,
+      description,
+      alternates: { canonical },
+      openGraph: {
+        type: "article",
+        title: p.titre,
+        description,
+        siteName: "Athena",
+        url: canonical,
+        images: [{ url: ogImage, width: 1200, height: 630, alt: p.titre }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: p.titre,
+        description,
+        images: [ogImage],
+      },
     };
   } catch {
     return { title: "Proposition de loi — Athena" };
