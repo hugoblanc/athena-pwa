@@ -16,6 +16,7 @@ COPY . .
 # Les variables NEXT_PUBLIC_* sont INLINÉES au build → passées en build-args.
 # (CapRover injecte les variables d'env de l'app comme --build-arg.)
 ARG NEXT_PUBLIC_API_URL
+# Origine publique de la PWA (liens de partage + OG). Prod : https://athena-app.xyz
 ARG NEXT_PUBLIC_SITE_URL
 ARG NEXT_PUBLIC_FIREBASE_API_KEY
 ARG NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
