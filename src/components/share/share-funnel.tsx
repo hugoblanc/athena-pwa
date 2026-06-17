@@ -167,6 +167,15 @@ export function ShareFunnel({
             </p>
           )}
 
+          {!deferred && (
+            <Link
+              href="/installer"
+              className="mt-3 block text-center text-[13px] font-semibold text-primary transition-colors hover:text-primary-hover"
+            >
+              Voir le guide d&apos;installation détaillé
+            </Link>
+          )}
+
           <Link
             href={contentHref}
             className="mt-3 flex items-center justify-center gap-1.5 text-[13.5px] font-semibold text-text-dim transition-colors hover:text-text"

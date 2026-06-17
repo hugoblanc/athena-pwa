@@ -17,7 +17,7 @@ import { TopBar } from "./top-bar";
  */
 function isFunnelRoute(pathname: string | null): boolean {
   if (!pathname) return false;
-  return pathname.startsWith("/share");
+  return pathname.startsWith("/share") || pathname.startsWith("/installer");
 }
 
 /**
