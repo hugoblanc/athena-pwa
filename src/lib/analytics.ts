@@ -3,7 +3,7 @@
  *
  * Volontairement minimaliste et respectueux : aucun identifiant persistant
  * côté client, aucune lib tierce. L'événement part en `sendBeacon` vers le BFF
- * Next `/api/track` (même origine → pas de CORS), qui calcule une empreinte
+ * Next `/api/loop` (même origine → pas de CORS), qui calcule une empreinte
  * quotidienne non réversible côté serveur puis relaie à l'API NestJS. No-op si
  * « Do Not Track » est activé.
  */
@@ -47,9 +47,9 @@ export function track(event: AnalyticsEvent, props: TrackProps): void {
     });
     if (typeof navigator.sendBeacon === "function") {
       const blob = new Blob([body], { type: "application/json" });
-      if (navigator.sendBeacon("/api/track", blob)) return;
+      if (navigator.sendBeacon("/api/loop", blob)) return;
     }
-    void fetch("/api/track", {
+    void fetch("/api/loop", {
       method: "POST",
       body,
       headers: { "Content-Type": "application/json" },
