@@ -91,15 +91,12 @@ export default async function SharePage({ params }: ShareParams) {
         contentHref={contentHref}
         source={data.mediaTitle}
         isVideo={isVideo}
-        showActions={false}
       />
       <ShareFunnel
         refType="content"
         refId={contentId}
         sharePath={sharePath.content(key, contentId)}
         title={data.title}
-        contentHref={contentHref}
-        isVideo={isVideo}
       />
     </div>
   );

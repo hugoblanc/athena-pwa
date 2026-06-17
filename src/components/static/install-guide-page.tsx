@@ -16,13 +16,10 @@ import {
   WifiOff,
 } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
+import { promptInstall, useCanInstall } from "@/lib/a2hs";
+import { track } from "@/lib/analytics";
 import { cn } from "@/lib/cn";
 import { isInAppBrowser, isIOS, isStandalone } from "@/lib/pwa";
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
 
 type Platform = "ios" | "android" | "desktop";
 
@@ -121,13 +118,12 @@ export function InstallGuidePageContent() {
   const [mounted, setMounted] = useState(false);
   const [platform, setPlatform] = useState<Platform>("android");
   const [autoDetected, setAutoDetected] = useState<Platform>("android");
-  const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(
-    null,
-  );
   const [standalone, setStandalone] = useState(false);
   const [inApp, setInApp] = useState(false);
   const [installed, setInstalled] = useState(false);
   const [iosNonSafari, setIosNonSafari] = useState(false);
+  // Invite native partagée (capturée globalement, survit à la nav /share → ici).
+  const canInstall = useCanInstall();
 
   useEffect(() => {
     setMounted(true);
@@ -138,26 +134,18 @@ export function InstallGuidePageContent() {
     setInApp(isInAppBrowser());
     setIosNonSafari(isIosNonSafari());
 
-    const onBip = (e: Event) => {
-      e.preventDefault();
-      setDeferred(e as BeforeInstallPromptEvent);
+    const onInstalled = () => {
+      setInstalled(true);
+      track("install", { refType: "content", refId: "installer", ref: "installer" });
     };
-    const onInstalled = () => setInstalled(true);
-    window.addEventListener("beforeinstallprompt", onBip);
     window.addEventListener("appinstalled", onInstalled);
-    return () => {
-      window.removeEventListener("beforeinstallprompt", onBip);
-      window.removeEventListener("appinstalled", onInstalled);
-    };
+    return () => window.removeEventListener("appinstalled", onInstalled);
   }, []);
 
-  const canPrompt = platform !== "ios" && !!deferred;
+  const canPrompt = platform !== "ios" && canInstall;
 
   async function install() {
-    if (!deferred) return;
-    await deferred.prompt();
-    await deferred.userChoice;
-    setDeferred(null);
+    await promptInstall();
   }
 
   return (
