@@ -16,7 +16,9 @@ export function TabBar({ className }: { className?: string }) {
   return (
     <nav
       className={cn(
-        "shrink-0 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)]",
+        // Fixée en bas du viewport : le <main> réserve déjà l'espace (pb-160px).
+        // Sans ça, la barre passait dans le flux et glissait sous le contenu.
+        "fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)]",
         className,
       )}
     >
