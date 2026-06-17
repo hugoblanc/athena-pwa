@@ -1,6 +1,7 @@
 import { ExternalLink, FileText, Video } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Tag } from "@/components/ui/tag";
+import { mediaLogoSrc } from "@/lib/media";
 import type { MetaMedia } from "@/lib/api/types";
 
 /**
@@ -23,7 +24,7 @@ export function MediaHeader({
     <header className="mb-5 border-b border-border pb-5">
       <div className="flex items-start gap-4">
         <Avatar
-          src={media.logo}
+          src={mediaLogoSrc(media.logo)}
           name={media.title}
           size={64}
           square

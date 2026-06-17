@@ -10,6 +10,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/cn";
 import { formatDuration } from "@/lib/format";
+import { mediaLogoSrc } from "@/lib/media";
 import type { Podcast } from "@/lib/api/types";
 
 /**
@@ -21,7 +22,7 @@ export function PodcastPlayPanel({ podcast }: { podcast: Podcast }) {
   const content = podcast.content;
   const title = content?.title ?? "Podcast Athena";
   const source = content?.meta_media?.title ?? "Athena";
-  const logo = content?.meta_media?.logo;
+  const logo = mediaLogoSrc(content?.meta_media?.logo);
   const artwork = content?.image?.url ?? logo;
 
   const track = usePlayerStore((s) => s.track);

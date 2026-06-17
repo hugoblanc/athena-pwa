@@ -15,6 +15,7 @@ import {
 } from "@/lib/api/content";
 import type { Content, ShareableContentResponse } from "@/lib/api/types";
 import { formatDate } from "@/lib/format";
+import { mediaLogoSrc } from "@/lib/media";
 import { buildShareUrl, sharePath } from "@/lib/site";
 
 interface PageParams {
@@ -124,7 +125,7 @@ export default async function ContentDetailPage({
         <div className="mt-3.5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-xs text-text-dim">
           <span className="flex items-center gap-2">
             <Avatar
-              src={content.metaMedia?.logo}
+              src={mediaLogoSrc(content.metaMedia?.logo)}
               name={sourceTitle}
               size={22}
               square

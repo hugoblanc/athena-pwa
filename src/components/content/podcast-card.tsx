@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tag } from "@/components/ui/tag";
 import { cn } from "@/lib/cn";
 import { formatDuration } from "@/lib/format";
+import { mediaLogoSrc } from "@/lib/media";
 import type { Podcast } from "@/lib/api/types";
 
 /**
@@ -18,7 +19,7 @@ export function PodcastCard({ podcast }: { podcast: Podcast }) {
   const content = podcast.content;
   const title = content?.title ?? "Podcast Athena";
   const source = content?.meta_media?.title ?? "Athena";
-  const logo = content?.meta_media?.logo;
+  const logo = mediaLogoSrc(content?.meta_media?.logo);
   const artwork = content?.image?.url ?? logo;
   const href = `/podcasts/${podcast.id}`;
 
