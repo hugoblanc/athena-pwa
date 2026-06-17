@@ -32,7 +32,12 @@ export const metadata: Metadata = {
   applicationName: "Athena",
   manifest: "/manifest.webmanifest",
   icons: {
-    icon: "/icons/icon-192.png",
+    // Favicon onglet : owl détouré sur fond transparent (plus net que la tuile
+    // sombre). L'icône d'install PWA (fond plein) reste dans le manifest.
+    icon: [
+      { url: "/icons/favicon.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/favicon-512.png", sizes: "512x512", type: "image/png" },
+    ],
     apple: "/icons/apple-touch-icon.png",
   },
   appleWebApp: {
