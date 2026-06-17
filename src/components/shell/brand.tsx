@@ -1,12 +1,18 @@
 import { cn } from "@/lib/cn";
 
-/** Logo + nom Athena. */
+/** Logo + nom Athena (chouette de marque + wordmark). */
 export function Brand({ className }: { className?: string }) {
   return (
     <div className={cn("flex items-center gap-[10px]", className)}>
-      <div className="grid size-[34px] place-items-center rounded-[9px] bg-gradient-to-br from-brand-500 to-brand-600 font-display text-[17px] font-extrabold text-white shadow-[0_4px_12px_rgba(252,116,58,0.35)]">
-        A
-      </div>
+      {/* Owl détouré (= favicon / icône d'app) + lueur orange douce. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/icons/favicon.png"
+        alt=""
+        width={36}
+        height={36}
+        className="size-[36px] drop-shadow-[0_2px_10px_rgba(252,116,58,0.4)]"
+      />
       <span className="font-display text-[19px] font-extrabold tracking-[-0.01em]">
         Athena
       </span>
