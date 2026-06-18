@@ -40,16 +40,36 @@ function writePrefs(prefs: FeedPrefs): void {
 
 // Mini-store d'abonnés (même pattern que use-first-launch.ts).
 const listeners = new Set<() => void>();
+
+// useSyncExternalStore exige une référence STABLE tant que rien ne change,
+// sinon boucle de re-rendus infinie. On mémorise le snapshot et on l'invalide
+// à chaque emit() / event storage.
+let snapshot: FeedPrefs | undefined;
+
 function emit() {
+  snapshot = undefined;
   for (const l of listeners) l();
 }
 function subscribe(cb: () => void): () => void {
   listeners.add(cb);
-  return () => listeners.delete(cb);
+  const onStorage = () => {
+    snapshot = undefined;
+    cb();
+  };
+  if (typeof window !== "undefined") {
+    window.addEventListener("storage", onStorage);
+  }
+  return () => {
+    listeners.delete(cb);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("storage", onStorage);
+    }
+  };
 }
 
 function getSnapshot(): FeedPrefs {
-  return readPrefs();
+  if (snapshot === undefined) snapshot = readPrefs();
+  return snapshot;
 }
 /** Snapshot serveur neutre — pas de localStorage côté SSR. */
 function getServerSnapshot(): FeedPrefs {

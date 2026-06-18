@@ -23,19 +23,41 @@ function persistArticles(hrefs: Set<string>) {
 // entre composants et onglets sans setState-dans-un-effet.
 const listeners = new Set<() => void>();
 
+// useSyncExternalStore exige une référence STABLE tant que rien ne change,
+// sinon il re-rend en boucle. On mémorise donc le snapshot et on l'invalide
+// à chaque emit() / event storage.
+let snapshot: Set<string> | undefined;
+const SERVER_SNAPSHOT: Set<string> = new Set();
+
+/** Snapshot client mémorisé (recalculé après chaque emit / storage). */
+export function getSnapshot(): Set<string> {
+  if (snapshot === undefined) snapshot = readArticles();
+  return snapshot;
+}
+
+/** Snapshot serveur stable — aucun article lu avant hydratation. */
+export function getServerSnapshot(): Set<string> {
+  return SERVER_SNAPSHOT;
+}
+
 export function emit() {
+  snapshot = undefined;
   for (const l of listeners) l();
 }
 
 export function subscribe(cb: () => void): () => void {
   listeners.add(cb);
+  const onStorage = () => {
+    snapshot = undefined;
+    cb();
+  };
   if (typeof window !== "undefined") {
-    window.addEventListener("storage", cb);
+    window.addEventListener("storage", onStorage);
   }
   return () => {
     listeners.delete(cb);
     if (typeof window !== "undefined") {
-      window.removeEventListener("storage", cb);
+      window.removeEventListener("storage", onStorage);
     }
   };
 }

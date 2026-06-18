@@ -8,30 +8,27 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Tag } from "@/components/ui/tag";
 import { formatRelative } from "@/lib/format";
 import {
-  getReadingList,
+  getListSnapshot,
+  getServerListSnapshot,
   removeArticle,
-  subscribe,
   type SavedArticle,
+  subscribe,
 } from "@/lib/reading-list";
-
-/** Récupère la liste triée (snapshot client). */
-function getSnapshot() {
-  return getReadingList();
-}
-
-/** Snapshot SSR : tableau vide (pas de localStorage côté serveur). */
-function getServerSnapshot(): SavedArticle[] {
-  return [];
-}
 
 /**
  * Page liste de lecture — 100 % client.
  * Utilise useSyncExternalStore pour rester synchronisé avec les autres onglets.
+ * Les snapshots sont mémorisés côté store (référence stable) pour éviter la
+ * boucle de re-rendus de useSyncExternalStore.
  */
 export function ReadingListClient() {
   const t = useTranslations("readingList");
 
-  const items = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const items = useSyncExternalStore(
+    subscribe,
+    getListSnapshot,
+    getServerListSnapshot,
+  );
 
   return (
     <div className="mx-auto max-w-[640px] px-5 pt-4 pb-16 lg:pt-6">

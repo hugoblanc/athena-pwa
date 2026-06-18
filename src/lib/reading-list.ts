@@ -50,19 +50,41 @@ function persistList(items: SavedArticle[]): void {
 
 const listeners = new Set<() => void>();
 
+// useSyncExternalStore exige une référence STABLE tant que rien ne change,
+// sinon boucle de re-rendus infinie. On mémorise le snapshot trié et on
+// l'invalide à chaque emit() / event storage.
+let snapshot: SavedArticle[] | undefined;
+const SERVER_SNAPSHOT: SavedArticle[] = [];
+
+/** Snapshot client mémorisé (liste triée par savedAt desc). */
+export function getListSnapshot(): SavedArticle[] {
+  if (snapshot === undefined) snapshot = getReadingList();
+  return snapshot;
+}
+
+/** Snapshot serveur stable — liste vide avant hydratation. */
+export function getServerListSnapshot(): SavedArticle[] {
+  return SERVER_SNAPSHOT;
+}
+
 export function emit(): void {
+  snapshot = undefined;
   for (const l of listeners) l();
 }
 
 export function subscribe(cb: () => void): () => void {
   listeners.add(cb);
+  const onStorage = () => {
+    snapshot = undefined;
+    cb();
+  };
   if (typeof window !== "undefined") {
-    window.addEventListener("storage", cb);
+    window.addEventListener("storage", onStorage);
   }
   return () => {
     listeners.delete(cb);
     if (typeof window !== "undefined") {
-      window.removeEventListener("storage", cb);
+      window.removeEventListener("storage", onStorage);
     }
   };
 }

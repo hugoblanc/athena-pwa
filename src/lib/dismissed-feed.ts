@@ -24,19 +24,39 @@ export function persistDismissed(ids: Set<string>) {
 // sans setState-dans-un-effet. Hydration-safe via le snapshot serveur (= Set vide).
 const listeners = new Set<() => void>();
 
+// useSyncExternalStore exige une référence STABLE tant que rien ne change,
+// sinon boucle de re-rendus infinie. On mémorise le snapshot et on l'invalide
+// à chaque emit() / event storage.
+let snapshot: Set<string> | undefined;
+const SERVER_SNAPSHOT: Set<string> = new Set();
+
+export function getSnapshot(): Set<string> {
+  if (snapshot === undefined) snapshot = readDismissed();
+  return snapshot;
+}
+
+export function getServerSnapshot(): Set<string> {
+  return SERVER_SNAPSHOT;
+}
+
 export function emit() {
+  snapshot = undefined;
   for (const l of listeners) l();
 }
 
 export function subscribe(cb: () => void) {
   listeners.add(cb);
+  const onStorage = () => {
+    snapshot = undefined;
+    cb();
+  };
   if (typeof window !== "undefined") {
-    window.addEventListener("storage", cb);
+    window.addEventListener("storage", onStorage);
   }
   return () => {
     listeners.delete(cb);
     if (typeof window !== "undefined") {
-      window.removeEventListener("storage", cb);
+      window.removeEventListener("storage", onStorage);
     }
   };
 }
@@ -52,8 +72,8 @@ export function useDismissedFeed(): {
 } {
   const dismissed = useSyncExternalStore(
     subscribe,
-    readDismissed,
-    () => new Set<string>(), // snapshot serveur : rien de masqué avant hydratation
+    getSnapshot,
+    getServerSnapshot,
   );
 
   function dismiss(contentId: string) {
