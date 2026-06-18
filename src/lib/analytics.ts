@@ -11,8 +11,14 @@
  * ⚠️ Vie privée : ne JAMAIS passer de texte libre (requête de recherche, contenu
  * d'une question…) dans `refId`. Les dimensions screen/feature/session sont des
  * valeurs d'une allowlist fermée (côté client ET revalidées côté serveur).
+ *
+ * COMPLÉMENT PostHog : chaque event nommé est aussi envoyé à PostHog (init dans
+ * `instrumentation-client.ts`) pour l'analytics produit riche (funnels, rétention,
+ * pays via GeoIP serveur). Le système maison ci-dessus reste la source des
+ * compteurs agrégés de la growth loop ; PostHog ne le remplace pas.
  */
 
+import posthog from "posthog-js";
 import type { ShareRef, ShareRefType } from "@/lib/site";
 
 export type AnalyticsEvent =
@@ -85,6 +91,17 @@ function doNotTrack(): boolean {
  */
 export function track(event: AnalyticsEvent, props: TrackProps): void {
   if (typeof window === "undefined" || doNotTrack()) return;
+
+  // Complément PostHog : event nommé + dimensions (no-op si PostHog non chargé,
+  // ex. token absent). Respecte aussi DNT via la config posthog (respect_dnt).
+  if (posthog.__loaded) {
+    posthog.capture(event, {
+      ref_type: props.refType,
+      ref_id: props.refId,
+      ref: props.ref,
+    });
+  }
+
   try {
     const body = JSON.stringify({
       event,

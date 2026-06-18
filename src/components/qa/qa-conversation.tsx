@@ -196,7 +196,13 @@ export function QaConversation({
         {isEmpty ? (
           <QaZeroState onPick={send} />
         ) : (
-          <div className="mx-auto flex max-w-[720px] flex-col gap-7 px-5 py-6">
+          <div
+            // Vie privée (audience sensible) : `data-ph-mask` masque le texte des
+            // Q/R dans les session replays, `ph-no-capture` empêche l'autocapture
+            // de relever le texte des éléments cliqués ($el_text) dans cette zone.
+            data-ph-mask
+            className="ph-no-capture mx-auto flex max-w-[720px] flex-col gap-7 px-5 py-6"
+          >
             {exchanges.map((ex) => (
               <QaMessage key={ex.id} exchange={ex} onRetry={retry} />
             ))}

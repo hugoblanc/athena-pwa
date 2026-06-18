@@ -28,10 +28,11 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
 
-  // Ne jamais intercepter : audio (range), API, cross-origin.
+  // Ne jamais intercepter : audio (range), proxy PostHog (/ingest), cross-origin.
   if (
     req.headers.has("range") ||
     /\.(mp3|m4a|aac|ogg|wav)$/i.test(url.pathname) ||
+    url.pathname.startsWith("/ingest") ||
     url.origin !== self.location.origin
   ) {
     return;
