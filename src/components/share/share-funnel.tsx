@@ -25,12 +25,15 @@ export function ShareFunnel({
   refId,
   sharePath,
   title,
+  source,
 }: {
   refType: ShareRefType;
   refId: string;
   /** Chemin canonique de la ressource (via `sharePath.*`). */
   sharePath: string;
   title: string;
+  /** Média source, crédité dans le message de re-partage. */
+  source?: string;
 }) {
   const { reached } = useValueReached();
   const [standalone, setStandalone] = useState(false);
@@ -82,11 +85,13 @@ export function ShareFunnel({
             Partagez à votre tour
           </h2>
           <p className="mb-3 mt-1.5 text-[13px] text-text-dim">
-            Faites circuler l&apos;info auprès de ceux que ça intéresse.
+            Cette info mérite mieux que les algorithmes. Envoyez-la à ceux que ça
+            concerne.
           </p>
           <ShareIntents
             path={sharePath}
             title={title}
+            source={source}
             refType={refType}
             refId={refId}
           />

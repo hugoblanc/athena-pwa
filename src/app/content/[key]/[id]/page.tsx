@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ShareButton } from "@/components/ui/share-button";
 import { Tag } from "@/components/ui/tag";
 import { ApiError } from "@/lib/api/client";
+import { API_BASE_URL } from "@/lib/api/config";
 import {
   getContent,
   getShareableContent,
@@ -66,26 +67,23 @@ export async function generateMetadata({
   if (!share) return { title: "Contenu — Athena" };
 
   const url = `/content/${key}/${id}`;
+  // OG image brandée servie par l'API (carte 1200×630 Athena + média source),
+  // partagée avec la landing /share — voir le commentaire là-bas.
+  const ogImage = `${API_BASE_URL}/content/${encodeURIComponent(
+    key,
+  )}/${encodeURIComponent(id)}/og.png`;
   return {
     title: share.title,
     openGraph: {
       title: share.title,
       type: "article",
       url,
-      images: share.image?.url
-        ? [
-            {
-              url: share.image.url,
-              width: share.image.width,
-              height: share.image.height,
-            },
-          ]
-        : undefined,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: share.title }],
     },
     twitter: {
       card: "summary_large_image",
       title: share.title,
-      images: share.image?.url ? [share.image.url] : undefined,
+      images: [ogImage],
     },
   };
 }

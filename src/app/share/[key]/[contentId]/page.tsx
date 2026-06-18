@@ -5,6 +5,7 @@ import { SharePreview } from "@/components/share/share-preview";
 import { ShareFunnel } from "@/components/share/share-funnel";
 import { getShareableContent } from "@/lib/api/content";
 import { ApiError } from "@/lib/api/client";
+import { API_BASE_URL } from "@/lib/api/config";
 import { absoluteUrl, sharePath } from "@/lib/site";
 import type { ShareableContentResponse } from "@/lib/api/types";
 
@@ -49,9 +50,12 @@ export async function generateMetadata({
   const description = data.mediaTitle
     ? `Partagé depuis ${data.mediaTitle} · à lire et écouter sur Athena.`
     : "À lire et écouter sur Athena, l'agrégateur des médias libres.";
-  const image = data.image?.url
-    ? [{ url: data.image.url, width: data.image.width, height: data.image.height }]
-    : undefined;
+  // OG image brandée générée et servie par l'API (cache volume) : carte 1200×630
+  // aux couleurs Athena + média source, au lieu de la miniature brute YouTube/
+  // WordPress. Améliore le CTR du lien partagé et la mémorisation de la marque.
+  const ogImage = `${API_BASE_URL}/content/${encodeURIComponent(
+    key,
+  )}/${encodeURIComponent(contentId)}/og.png`;
 
   return {
     title: data.title,
@@ -64,13 +68,13 @@ export async function generateMetadata({
       // URL canonique Athena (pas l'URL du média externe) : le clic doit
       // ramener sur la landing de partage, pas quitter vers la source.
       url: absoluteUrl(sharePath.content(key, contentId)),
-      images: image,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: data.title }],
     },
     twitter: {
-      card: image ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: data.title,
       description,
-      images: image ? [data.image.url] : undefined,
+      images: [ogImage],
     },
   };
 }
@@ -97,6 +101,7 @@ export default async function SharePage({ params }: ShareParams) {
         refId={contentId}
         sharePath={sharePath.content(key, contentId)}
         title={data.title}
+        source={data.mediaTitle}
       />
     </div>
   );

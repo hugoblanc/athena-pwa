@@ -3,13 +3,12 @@ import type { ReactNode } from "react";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { Issue } from "@/lib/api/types";
 import { IssueCard } from "./issue-card";
+import { STATUS_META, STATUS_ORDER, StatusBadge } from "./status-badge";
 
 /**
- * Wrapper de liste : empty / erreur / mapping `IssueCard`.
- *
- * En v1 il n'y a PAS de source de liste (cf. roadmap.ts §10) : `issues` est
- * vide et on rend l'`EmptyState` explicatif avec l'action « Proposer ».
- * Dès qu'un `GET /issues` propre existera, alimenter `issues` côté RSC parent.
+ * Liste roadmap groupée par statut (En cours / Prévu / Proposé / Livré).
+ * Les idées `rejected` sont masquées. Au sein d'une section, l'ordre de l'API
+ * est conservé (tri par votes décroissants).
  */
 export function RoadmapList({
   issues,
@@ -42,10 +41,28 @@ export function RoadmapList({
     );
   }
 
+  // Regroupe par statut en respectant l'ordre des sections.
+  const groups = STATUS_ORDER.map((status) => ({
+    status,
+    items: issues.filter((i) => (i.status ?? "open") === status),
+  })).filter((g) => g.items.length > 0);
+
   return (
-    <div className="flex flex-col gap-3">
-      {issues.map((issue, i) => (
-        <IssueCard key={issue.id ?? i} issue={issue} />
+    <div className="flex flex-col gap-7">
+      {groups.map(({ status, items }) => (
+        <section key={status} aria-label={STATUS_META[status]?.label}>
+          <header className="mb-3 flex items-center gap-2.5">
+            <StatusBadge status={status} />
+            <span className="text-[13px] font-semibold text-text-faint">
+              {items.length}
+            </span>
+          </header>
+          <div className="flex flex-col gap-3">
+            {items.map((issue, i) => (
+              <IssueCard key={issue.id ?? i} issue={issue} />
+            ))}
+          </div>
+        </section>
       ))}
     </div>
   );

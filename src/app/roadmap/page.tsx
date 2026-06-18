@@ -4,6 +4,8 @@ import { NewIssueDialog } from "@/components/roadmap/new-issue-dialog";
 import { RoadmapIntro } from "@/components/roadmap/roadmap-intro";
 import { RoadmapList } from "@/components/roadmap/roadmap-list";
 import { Button } from "@/components/ui/button";
+import { listIssues } from "@/lib/api/roadmap";
+import type { Issue } from "@/lib/api/types";
 
 export const metadata: Metadata = {
   title: "Roadmap",
@@ -11,10 +13,15 @@ export const metadata: Metadata = {
     "Ce qui est en construction sur Athena. Proposez une amélioration et votez pour orienter les priorités.",
 };
 
-export default function RoadmapPage() {
-  // v1 MINIMALE : pas de `GET /issues` propre côté API (cf. spec §10 / roadmap.ts).
-  // → liste vide : on rend l'EmptyState explicatif + action « Proposer ».
-  const issues = [] as const;
+export default async function RoadmapPage() {
+  // Liste des idées votées (BDD via API Athena). En cas d'échec API : EmptyState d'erreur.
+  let issues: Issue[] = [];
+  let error = false;
+  try {
+    issues = await listIssues();
+  } catch {
+    error = true;
+  }
 
   return (
     <div className="mx-auto max-w-[640px] px-5 pb-24 pt-4 lg:pb-10 lg:pt-6">
@@ -42,7 +49,8 @@ export default function RoadmapPage() {
 
       <div className="mt-5">
         <RoadmapList
-          issues={[...issues]}
+          issues={issues}
+          error={error}
           emptyAction={
             <NewIssueDialog
               trigger={

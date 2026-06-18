@@ -165,9 +165,21 @@ export interface UserProfile {
 }
 
 // ───────────────────────── Roadmap / Issues ─────────────────────────
+// L'API renvoie une forme compatible GitHub Issue (cf. athena_api/src/idea).
 export interface Issue {
   id?: number;
+  number?: number;
   title: string;
   body?: string;
+  /** "feature" | "bug" */
+  type?: string;
+  /** "open" | "planned" | "in_progress" | "done" | "rejected" */
+  status?: string;
+  state?: "open" | "closed";
+  /** nombre de votes (alias voteCount / comments selon le client). */
   claps?: number;
+  voteCount?: number;
+  labels?: { name: string }[];
+  created_at?: string;
+  updated_at?: string;
 }

@@ -13,18 +13,24 @@ import { buildShareUrl, type ShareRef, type ShareRefType } from "@/lib/site";
 export function ShareIntents({
   path,
   title,
+  source,
   refType,
   refId,
 }: {
   /** Chemin canonique de la ressource (via `sharePath.*`). */
   path: string;
   title: string;
+  /** Média source (ex. « Blast »). Crédité dans le message si présent. */
+  source?: string;
   refType: ShareRefType;
   refId: string;
 }) {
   function intent(ref: ShareRef): { url: string; text: string } {
     const url = buildShareUrl(path, ref);
-    return { url, text: `${title} — à suivre sur Athena` };
+    // Le crédit au média (« via … ») valorise la source et donne une raison de
+    // cliquer ; la signature dit ce qu'est Athena à qui ne connaît pas.
+    const credit = source ? ` — via ${source}` : "";
+    return { url, text: `${title}${credit}, à suivre sur Athena` };
   }
 
   function onShare(channel: ShareRef, href: string) {
