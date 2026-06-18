@@ -28,7 +28,11 @@
       "all": "All",
       "video": "Videos",
       "article": "Articles"
-    }
+    },
+    "dismissed": "Article hidden",
+    "undoDismiss": "Undo",
+    "dismissAriaLabel": "Hide this article",
+    "emptyDescDismissed": "You've hidden all articles. Come back later for new content."
   },
   "profile": {
     "title": "Profile",

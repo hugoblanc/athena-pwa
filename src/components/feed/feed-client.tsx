@@ -1,6 +1,6 @@
 "use client";
 
-import { SearchX } from "lucide-react";
+import { EyeOff, SearchX } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -8,6 +8,7 @@ import { BookmarkButton } from "@/components/content/bookmark-button";
 import { ContentCard, HeroCard } from "@/components/content/content-card";
 import { ContentListSkeleton } from "@/components/content/content-card-skeleton";
 import { Button } from "@/components/ui/button";
+import { DismissToast } from "@/components/ui/dismiss-toast";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FilterChips } from "@/components/ui/filter-chips";
 import { InfiniteSentinel } from "@/components/ui/infinite-sentinel";
@@ -15,6 +16,7 @@ import { SearchField } from "@/components/ui/search-field";
 import { getLastContent } from "@/lib/api/content";
 import type { UnifiedPage } from "@/lib/api/pagination";
 import type { ContentLite, ListMetaMedia } from "@/lib/api/types";
+import { useDismissedFeed } from "@/lib/dismissed-feed";
 import { useFeedPrefs } from "@/lib/feed-prefs";
 import type { SavedArticle } from "@/lib/reading-list";
 import {
@@ -24,6 +26,7 @@ import {
   toCardData,
   toHeroData,
 } from "./feed-utils";
+import { DismissableCard } from "./dismissable-card";
 import { FeedSkeleton } from "./feed-skeleton";
 
 const PAGE_SIZE = 10;
@@ -61,6 +64,10 @@ export function FeedClient({
   const [error, setError] = useState<"page" | "more" | null>(null);
   // Incrémenté pour re-déclencher le fetch page 1 (réessai sur erreur).
   const [retryKey, setRetryKey] = useState(0);
+
+  // Dismiss
+  const { dismissed, dismiss, undoDismiss } = useDismissedFeed();
+  const [pendingUndo, setPendingUndo] = useState<string | null>(null);
 
   // Évite que le re-fetch initial (déclenché par l'effet) écrase la 1ère page SSR.
   const firstRender = useRef(true);
@@ -135,8 +142,29 @@ export function FeedClient({
     persistType("all");
   }
 
-  const [hero, ...rest] = items;
-  const isEmpty = items.length === 0;
+  function handleDismiss(contentId: string) {
+    dismiss(contentId);
+    setPendingUndo(contentId);
+  }
+
+  function handleUndo() {
+    if (pendingUndo) undoDismiss(pendingUndo);
+    setPendingUndo(null);
+  }
+
+  // Filtre les articles masqués
+  const visibleItems = items.filter((c) => !dismissed.has(c.contentId));
+
+  // Si la page visible est presque vide et qu'il reste des pages, charger plus
+  useEffect(() => {
+    if (visibleItems.length < 3 && hasNext && !loadingMore && !refetching) {
+      void loadMore();
+    }
+  }, [visibleItems.length, hasNext, loadingMore, refetching, loadMore]);
+
+  const [hero, ...rest] = visibleItems;
+  const isEmpty = visibleItems.length === 0;
+  const allDismissed = items.length > 0 && visibleItems.length === 0 && !hasNext;
   const filtered = Boolean(terms) || type !== "all";
 
   /** Construit le SavedArticle minimal depuis un ContentLite (pas de backend). */
@@ -185,6 +213,12 @@ export function FeedClient({
           message={t("errorPage")}
           onRetry={() => setRetryKey((k) => k + 1)}
         />
+      ) : allDismissed ? (
+        <EmptyState
+          icon={EyeOff}
+          title={t("emptyTitle")}
+          description={t("emptyDescDismissed")}
+        />
       ) : isEmpty ? (
         <EmptyState
           icon={SearchX}
@@ -207,16 +241,21 @@ export function FeedClient({
       ) : (
         <>
           {hero && (
-            <HeroCard
-              data={toHeroData(hero, ecoMode)}
+            <DismissableCard
+              contentId={hero.contentId}
+              onDismiss={handleDismiss}
               className="mb-[18px]"
-              actions={
-                <BookmarkButton
-                  article={toSavedArticle(hero)}
-                  variant="feed"
-                />
-              }
-            />
+            >
+              <HeroCard
+                data={toHeroData(hero, ecoMode)}
+                actions={
+                  <BookmarkButton
+                    article={toSavedArticle(hero)}
+                    variant="feed"
+                  />
+                }
+              />
+            </DismissableCard>
           )}
 
           {rest.length > 0 && (
@@ -227,16 +266,21 @@ export function FeedClient({
 
           <div className="grid gap-3 lg:grid-cols-2">
             {rest.map((c) => (
-              <ContentCard
+              <DismissableCard
                 key={c.id}
-                data={toCardData(c, ecoMode)}
-                actions={
-                  <BookmarkButton
-                    article={toSavedArticle(c)}
-                    variant="feed"
-                  />
-                }
-              />
+                contentId={c.contentId}
+                onDismiss={handleDismiss}
+              >
+                <ContentCard
+                  data={toCardData(c, ecoMode)}
+                  actions={
+                    <BookmarkButton
+                      article={toSavedArticle(c)}
+                      variant="feed"
+                    />
+                  }
+                />
+              </DismissableCard>
             ))}
           </div>
 
@@ -260,6 +304,13 @@ export function FeedClient({
             loading={loadingMore}
           />
         </>
+      )}
+
+      {pendingUndo && (
+        <DismissToast
+          onUndo={handleUndo}
+          onClose={() => setPendingUndo(null)}
+        />
       )}
     </div>
   );

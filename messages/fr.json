@@ -28,7 +28,11 @@
       "all": "Tout",
       "video": "Vidéos",
       "article": "Articles"
-    }
+    },
+    "dismissed": "Article masqué",
+    "undoDismiss": "Annuler",
+    "dismissAriaLabel": "Masquer cet article",
+    "emptyDescDismissed": "Vous avez masqué tous les articles. Revenez plus tard pour de nouveaux contenus."
   },
   "profile": {
     "title": "Profil",
