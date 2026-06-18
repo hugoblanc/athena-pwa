@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArticleBody } from "@/components/content/article-body";
 import { BookmarkButton } from "@/components/content/bookmark-button";
 import { ListenButton } from "@/components/content/listen-button";
+import { NotifyOptInSheet } from "@/components/notif/notify-opt-in-sheet";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ShareButton } from "@/components/ui/share-button";
@@ -215,6 +216,9 @@ export default async function ContentDetailPage({
           . Soutenez les médias libres en consultant la source originale.
         </footer>
       )}
+
+      {/* Opt-in notif après ~12 s de lecture (non bloquant). */}
+      <NotifyOptInSheet mediaTitle={sourceTitle} />
     </article>
   );
 }

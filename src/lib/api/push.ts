@@ -1,10 +1,36 @@
 "use client";
 
 import { trackFeature } from "@/lib/analytics";
-import { authFetch } from "./auth-client";
+import { auth } from "@/lib/firebase";
+import { API_BASE_URL } from "./config";
 
 /** Clé VAPID publique (injectée au build). */
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+
+/**
+ * POST vers /push/* avec Bearer Firebase SI l'utilisateur est connecté, sinon
+ * anonyme. `/push/subscribe` est en @OptionalAuth côté API : un visiteur non
+ * connecté peut s'abonner (opt-in depuis un lien partagé).
+ */
+async function pushPost(path: string, body: unknown): Promise<void> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  const user = auth?.currentUser;
+  if (user) {
+    try {
+      headers.Authorization = `Bearer ${await user.getIdToken()}`;
+    } catch {
+      /* token indisponible : on poursuit en anonyme */
+    }
+  }
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Push ${path}: ${res.status}`);
+}
 
 export function isPushSupported(): boolean {
   return (
@@ -38,11 +64,7 @@ export async function subscribeToPush(): Promise<PushSubscription> {
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
     }));
-  await authFetch("/push/subscribe", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(sub.toJSON()),
-  });
+  await pushPost("/push/subscribe", sub.toJSON());
   trackFeature("notif_enable");
   return sub;
 }
@@ -52,11 +74,7 @@ export async function unsubscribeFromPush(): Promise<void> {
   const reg = await navigator.serviceWorker.ready;
   const sub = await reg.pushManager.getSubscription();
   if (!sub) return;
-  await authFetch("/push/unsubscribe", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ endpoint: sub.endpoint }),
-  });
+  await pushPost("/push/unsubscribe", { endpoint: sub.endpoint });
   await sub.unsubscribe();
   trackFeature("notif_disable");
 }

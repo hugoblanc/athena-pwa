@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { NotifyOptInSheet } from "@/components/notif/notify-opt-in-sheet";
 import { SharePreview } from "@/components/share/share-preview";
 import { ShareFunnel } from "@/components/share/share-funnel";
 import { getShareableContent } from "@/lib/api/content";
@@ -103,6 +104,8 @@ export default async function SharePage({ params }: ShareParams) {
         title={data.title}
         source={data.mediaTitle}
       />
+      {/* Opt-in notif après ~12 s de lecture (non bloquant). */}
+      <NotifyOptInSheet mediaTitle={data.mediaTitle} />
     </div>
   );
 }
