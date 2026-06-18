@@ -36,6 +36,7 @@
     "sectionSettings": "Settings",
     "sectionAbout": "About",
     "notifPrefs": "Notification preferences",
+    "readingList": "Reading list",
     "darkTheme": "Dark theme",
     "darkThemeToggle": "Enable dark theme",
     "ecoMode": "Eco mode · no images",
@@ -48,5 +49,11 @@
     "signOutConfirmTitle": "Sign out?",
     "signOutConfirmBody": "You can sign back in at any time. Browsing content stays free without an account.",
     "signOutPending": "Signing out…"
+  },
+  "readingList": {
+    "title": "Reading list",
+    "emptyTitle": "No saved articles",
+    "emptyDescription": "Tap the bookmark on an article to find it here later.",
+    "remove": "Remove from reading list"
   }
 }

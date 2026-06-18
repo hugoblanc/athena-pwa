@@ -36,6 +36,7 @@
     "sectionSettings": "Réglages",
     "sectionAbout": "À propos",
     "notifPrefs": "Préférences de notification",
+    "readingList": "Liste de lecture",
     "darkTheme": "Thème sombre",
     "darkThemeToggle": "Activer le thème sombre",
     "ecoMode": "Mode économie · sans images",
@@ -48,5 +49,11 @@
     "signOutConfirmTitle": "Se déconnecter ?",
     "signOutConfirmBody": "Vous pourrez vous reconnecter à tout moment. La consultation du contenu reste libre sans compte.",
     "signOutPending": "Déconnexion…"
+  },
+  "readingList": {
+    "title": "Liste de lecture",
+    "emptyTitle": "Aucun article enregistré",
+    "emptyDescription": "Appuyez sur le marque-page d'un article pour le retrouver ici.",
+    "remove": "Retirer de la liste de lecture"
   }
 }

@@ -4,6 +4,7 @@ import { SearchX } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { BookmarkButton } from "@/components/content/bookmark-button";
 import { ContentCard, HeroCard } from "@/components/content/content-card";
 import { ContentListSkeleton } from "@/components/content/content-card-skeleton";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import { getLastContent } from "@/lib/api/content";
 import type { UnifiedPage } from "@/lib/api/pagination";
 import type { ContentLite, ListMetaMedia } from "@/lib/api/types";
 import { useFeedPrefs } from "@/lib/feed-prefs";
+import type { SavedArticle } from "@/lib/reading-list";
 import {
   FEED_TYPES,
   type FeedType,
@@ -137,6 +139,20 @@ export function FeedClient({
   const isEmpty = items.length === 0;
   const filtered = Boolean(terms) || type !== "all";
 
+  /** Construit le SavedArticle minimal depuis un ContentLite (pas de backend). */
+  function toSavedArticle(c: ContentLite): Omit<SavedArticle, "savedAt"> {
+    return {
+      id: c.id,
+      contentId: c.contentId,
+      mediaKey: c.metaMedia.key,
+      title: c.title,
+      publishedAt: c.publishedAt,
+      imageUrl: c.image?.url,
+      mediaTitle: c.metaMedia.title,
+      mediaType: c.metaMedia.type,
+    };
+  }
+
   return (
     <div>
       {/* Recherche + filtres */}
@@ -191,7 +207,16 @@ export function FeedClient({
       ) : (
         <>
           {hero && (
-            <HeroCard data={toHeroData(hero, ecoMode)} className="mb-[18px]" />
+            <HeroCard
+              data={toHeroData(hero, ecoMode)}
+              className="mb-[18px]"
+              actions={
+                <BookmarkButton
+                  article={toSavedArticle(hero)}
+                  variant="feed"
+                />
+              }
+            />
           )}
 
           {rest.length > 0 && (
@@ -202,7 +227,16 @@ export function FeedClient({
 
           <div className="grid gap-3 lg:grid-cols-2">
             {rest.map((c) => (
-              <ContentCard key={c.id} data={toCardData(c, ecoMode)} />
+              <ContentCard
+                key={c.id}
+                data={toCardData(c, ecoMode)}
+                actions={
+                  <BookmarkButton
+                    article={toSavedArticle(c)}
+                    variant="feed"
+                  />
+                }
+              />
             ))}
           </div>
 

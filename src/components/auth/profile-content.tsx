@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, FileText, Info, Map, ShieldCheck } from "lucide-react";
+import { Bell, Bookmark, FileText, Info, Map, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -94,6 +94,11 @@ export function ProfileContent() {
           icon={Bell}
           label={t("notifPrefs")}
           href="/profile/notifications"
+        />
+        <SettingsLinkRow
+          icon={Bookmark}
+          label={t("readingList")}
+          href="/reading-list"
         />
         <ThemeToggleRow />
         <EcoModeRow />
