@@ -5,7 +5,11 @@ import { AppShell } from "@/components/shell/app-shell";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ServiceWorkerRegistrar } from "@/components/pwa/service-worker-registrar";
+import { UsageTracker } from "@/components/analytics/usage-tracker";
 import { SITE_ORIGIN } from "@/lib/site";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
+import { dirFor, type Locale } from "@/i18n/config";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -55,22 +59,29 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const locale = (await getLocale()) as Locale;
+  const dir = dirFor(locale);
+
   return (
     <html
-      lang="fr"
+      lang={locale}
+      dir={dir}
       suppressHydrationWarning
       className={`${inter.variable} ${spaceGrotesk.variable} antialiased`}
     >
       <body>
-        <ThemeProvider>
-          <AuthProvider>
-            <AppShell>{children}</AppShell>
-          </AuthProvider>
-        </ThemeProvider>
+        <NextIntlClientProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <AppShell>{children}</AppShell>
+            </AuthProvider>
+          </ThemeProvider>
+        </NextIntlClientProvider>
         <ServiceWorkerRegistrar />
+        <UsageTracker />
       </body>
     </html>
   );

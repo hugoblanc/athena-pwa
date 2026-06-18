@@ -8,11 +8,8 @@ import { formatRelative } from "@/lib/format";
 /** Onglets de type (le filtre `type` API n'existe pas → dérivé en `mediaKeys`). */
 export type FeedType = "all" | "video" | "article";
 
-export const FEED_TYPE_CHIPS: { value: FeedType; label: string }[] = [
-  { value: "all", label: "Tout" },
-  { value: "video", label: "Vidéos" },
-  { value: "article", label: "Articles" },
-];
+/** Ordre des filtres ; les libellés sont traduits côté composant (`feed.chips.*`). */
+export const FEED_TYPES: FeedType[] = ["all", "video", "article"];
 
 const TYPE_TO_MEDIA: Record<Exclude<FeedType, "all">, "YOUTUBE" | "WORDPRESS"> =
   {

@@ -3,17 +3,16 @@ import type { LucideIcon } from "lucide-react";
 
 export interface NavEntry {
   href: string;
-  label: string;
-  /** label court pour la tab bar mobile */
-  short: string;
+  /** Clé de traduction sous le namespace `nav` (ex. `nav.feed.label`/`.short`). */
+  key: "feed" | "medias" | "podcasts" | "laws" | "qa";
   icon: LucideIcon;
 }
 
 /** Navigation principale — identique mobile (tab bar) et desktop (sidebar). */
 export const NAV_ENTRIES: NavEntry[] = [
-  { href: "/", label: "Fil d'actu", short: "Fil", icon: Home },
-  { href: "/medias", label: "Médias", short: "Médias", icon: LayoutGrid },
-  { href: "/podcasts", label: "Podcasts", short: "Podcasts", icon: Music },
-  { href: "/propositions", label: "Propositions de loi", short: "Lois", icon: Scale },
-  { href: "/qa", label: "Demander à Athena", short: "Athena", icon: Sparkles },
+  { href: "/", key: "feed", icon: Home },
+  { href: "/medias", key: "medias", icon: LayoutGrid },
+  { href: "/podcasts", key: "podcasts", icon: Music },
+  { href: "/propositions", key: "laws", icon: Scale },
+  { href: "/qa", key: "qa", icon: Sparkles },
 ];

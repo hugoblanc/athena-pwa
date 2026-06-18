@@ -1,8 +1,10 @@
 "use client";
 
 import { Bell, FileText, Info, Map, ShieldCheck } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { LocaleSwitcherRow } from "@/components/i18n/locale-switcher";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getMe } from "@/lib/api/user";
 import type { UserProfile } from "@/lib/api/types";
@@ -19,6 +21,8 @@ import { ThemeToggleRow } from "./theme-toggle-row";
 export function ProfileContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const t = useTranslations("profile");
+  const tc = useTranslations("common");
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [profileError, setProfileError] = useState(false);
@@ -63,7 +67,7 @@ export function ProfileContent() {
   return (
     <div className="mx-auto max-w-[640px] px-5 pt-4 lg:pt-6">
       <h1 className="mb-5 font-display text-[28px] font-extrabold tracking-[-0.02em]">
-        Profil
+        {t("title")}
       </h1>
 
       {meLoading ? (
@@ -77,36 +81,37 @@ export function ProfileContent() {
           role="alert"
           className="mt-3 rounded-[var(--radius)] border border-border bg-surface-2 px-3.5 py-2.5 text-[13px] text-text-dim"
         >
-          Profil serveur indisponible. Votre identité de base reste affichée.
+          {t("serverError")}
         </p>
       )}
 
       <h2 className="mb-2.5 mt-7 text-[13px] font-bold uppercase tracking-[0.06em] text-text-dim">
-        Réglages
+        {t("sectionSettings")}
       </h2>
       <SettingsList>
         <SettingsLinkRow
           icon={Bell}
-          label="Préférences de notification"
+          label={t("notifPrefs")}
           href="/profile/notifications"
         />
         <ThemeToggleRow />
+        <LocaleSwitcherRow label={tc("language")} />
       </SettingsList>
 
       <h2 className="mb-2.5 mt-7 text-[13px] font-bold uppercase tracking-[0.06em] text-text-dim">
-        À propos
+        {t("sectionAbout")}
       </h2>
       <SettingsList>
-        <SettingsLinkRow icon={Map} label="Roadmap" href="/roadmap" />
-        <SettingsLinkRow icon={Info} label="Informations" href="/about" />
+        <SettingsLinkRow icon={Map} label={t("roadmap")} href="/roadmap" />
+        <SettingsLinkRow icon={Info} label={t("about")} href="/about" />
         <SettingsLinkRow
           icon={ShieldCheck}
-          label="Confidentialité"
+          label={t("privacy")}
           href="/privacy"
         />
         <SettingsLinkRow
           icon={FileText}
-          label="Conditions d'utilisation"
+          label={t("terms")}
           href="/terms"
         />
       </SettingsList>

@@ -1,7 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
 import { cn } from "@/lib/cn";
 import { Brand } from "./brand";
 import { NAV_ENTRIES } from "./nav-config";
@@ -13,18 +15,21 @@ function isActive(pathname: string, href: string) {
 /** Navigation desktop (≥ lg). */
 export function Sidebar({ className }: { className?: string }) {
   const pathname = usePathname();
+  const t = useTranslations("nav");
+  const tc = useTranslations("common");
 
   return (
     <aside
       className={cn(
-        "flex h-dvh flex-col gap-1 border-r border-border bg-surface px-[14px] py-[22px]",
+        // `border-e` (logique) → bord côté « fin de ligne » : droite en LTR, gauche en RTL.
+        "flex h-dvh flex-col gap-1 border-e border-border bg-surface px-[14px] py-[22px]",
         className,
       )}
     >
       <Brand className="px-3 pb-[22px]" />
 
       <nav className="flex flex-col gap-1">
-        {NAV_ENTRIES.map(({ href, label, icon: Icon }) => {
+        {NAV_ENTRIES.map(({ href, key, icon: Icon }) => {
           const active = isActive(pathname, href);
           return (
             <Link
@@ -39,11 +44,16 @@ export function Sidebar({ className }: { className?: string }) {
               )}
             >
               <Icon className="size-[19px] shrink-0" strokeWidth={2} />
-              {label}
+              {t(`${key}.label`)}
             </Link>
           );
         })}
       </nav>
+
+      {/* Sélecteur de langue, poussé en bas du menu. */}
+      <div className="mt-auto px-1 pt-4">
+        <LocaleSwitcher label={tc("language")} />
+      </div>
     </aside>
   );
 }

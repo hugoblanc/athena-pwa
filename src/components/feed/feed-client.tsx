@@ -1,6 +1,7 @@
 "use client";
 
 import { SearchX } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ContentCard, HeroCard } from "@/components/content/content-card";
@@ -14,7 +15,7 @@ import { getLastContent } from "@/lib/api/content";
 import type { UnifiedPage } from "@/lib/api/pagination";
 import type { ContentLite, ListMetaMedia } from "@/lib/api/types";
 import {
-  FEED_TYPE_CHIPS,
+  FEED_TYPES,
   type FeedType,
   mediaKeysForType,
   toCardData,
@@ -37,6 +38,7 @@ export function FeedClient({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const t = useTranslations("feed");
 
   const [items, setItems] = useState<ContentLite[]>(initialPage.items);
   const [page, setPage] = useState(initialPage.page);
@@ -132,12 +134,12 @@ export function FeedClient({
       {/* Recherche + filtres */}
       <SearchField
         defaultValue={initialTerms}
-        placeholder="Rechercher dans le fil"
+        placeholder={t("searchPlaceholder")}
         onSearch={setTerms}
         className="mb-3"
       />
       <FilterChips
-        options={FEED_TYPE_CHIPS}
+        options={FEED_TYPES.map((v) => ({ value: v, label: t(`chips.${v}`) }))}
         value={type}
         onChange={(v) => setType(v as FeedType)}
         className="mb-[18px]"
@@ -145,31 +147,31 @@ export function FeedClient({
 
       {/* Annonce de chargement pour les lecteurs d'écran */}
       <p aria-live="polite" className="sr-only">
-        {refetching || loadingMore ? "Chargement de plus de contenus…" : ""}
+        {refetching || loadingMore ? t("loadingMore") : ""}
       </p>
 
       {refetching ? (
         <FeedSkeleton />
       ) : error === "page" ? (
         <ErrorCard
-          message="Impossible de charger le fil."
+          message={t("errorPage")}
           onRetry={() => setRetryKey((k) => k + 1)}
         />
       ) : isEmpty ? (
         <EmptyState
           icon={SearchX}
-          title="Aucun résultat"
+          title={t("emptyTitle")}
           description={
             terms
-              ? `Aucun contenu pour « ${terms} »${
-                  type !== "all" ? " avec ce filtre" : ""
-                }.`
-              : "Aucun contenu pour ce filtre."
+              ? type !== "all"
+                ? t("emptyDescTermsFiltered", { terms })
+                : t("emptyDescTerms", { terms })
+              : t("emptyDescFilter")
           }
           action={
             filtered ? (
               <Button variant="secondary" onClick={resetFilters}>
-                Réinitialiser les filtres
+                {t("resetFilters")}
               </Button>
             ) : undefined
           }
@@ -180,7 +182,7 @@ export function FeedClient({
 
           {rest.length > 0 && (
             <h2 className="mb-3.5 mt-[22px] font-display text-[17px] font-extrabold tracking-[-0.01em]">
-              Récemment publié
+              {t("recentlyPublished")}
             </h2>
           )}
 
@@ -192,7 +194,7 @@ export function FeedClient({
 
           {error === "more" && (
             <ErrorCard
-              message="Échec du chargement."
+              message={t("errorMore")}
               onRetry={loadMore}
               compact
             />
@@ -224,6 +226,7 @@ function ErrorCard({
   onRetry: () => void;
   compact?: boolean;
 }) {
+  const t = useTranslations("common");
   return (
     <div
       role="alert"
@@ -233,7 +236,7 @@ function ErrorCard({
     >
       <span className="text-sm text-text-dim">{message}</span>
       <Button variant="secondary" size="sm" onClick={onRetry}>
-        Réessayer
+        {t("retry")}
       </Button>
     </div>
   );

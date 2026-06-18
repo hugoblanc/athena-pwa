@@ -1,0 +1,50 @@
+{
+  "common": {
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "home": "Athena home",
+    "language": "Language"
+  },
+  "nav": {
+    "feed": { "label": "Feed", "short": "Feed" },
+    "medias": { "label": "Media", "short": "Media" },
+    "podcasts": { "label": "Podcasts", "short": "Podcasts" },
+    "laws": { "label": "Bills", "short": "Bills" },
+    "qa": { "label": "Ask Athena", "short": "Athena" }
+  },
+  "feed": {
+    "title": "Feed",
+    "searchPlaceholder": "Search the feed",
+    "loadingMore": "Loading more content…",
+    "recentlyPublished": "Recently published",
+    "errorPage": "Couldn't load the feed.",
+    "errorMore": "Loading failed.",
+    "resetFilters": "Reset filters",
+    "emptyTitle": "No results",
+    "emptyDescTerms": "No content for “{terms}”.",
+    "emptyDescTermsFiltered": "No content for “{terms}” with this filter.",
+    "emptyDescFilter": "No content for this filter.",
+    "chips": {
+      "all": "All",
+      "video": "Videos",
+      "article": "Articles"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "serverError": "Server profile unavailable. Your basic identity is still shown.",
+    "sectionSettings": "Settings",
+    "sectionAbout": "About",
+    "notifPrefs": "Notification preferences",
+    "darkTheme": "Dark theme",
+    "darkThemeToggle": "Enable dark theme",
+    "roadmap": "Roadmap",
+    "about": "Information",
+    "privacy": "Privacy",
+    "terms": "Terms of use",
+    "signOut": "Sign out",
+    "signOutConfirmTitle": "Sign out?",
+    "signOutConfirmBody": "You can sign back in at any time. Browsing content stays free without an account.",
+    "signOutPending": "Signing out…"
+  }
+}

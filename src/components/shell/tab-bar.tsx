@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
@@ -12,6 +13,7 @@ function isActive(pathname: string, href: string) {
 /** Navigation mobile (< lg) — barre d'onglets en bas. */
 export function TabBar({ className }: { className?: string }) {
   const pathname = usePathname();
+  const t = useTranslations("nav");
 
   return (
     <nav
@@ -23,7 +25,7 @@ export function TabBar({ className }: { className?: string }) {
       )}
     >
       <div className="flex h-[72px] items-stretch px-1.5">
-        {NAV_ENTRIES.map(({ href, short, icon: Icon }) => {
+        {NAV_ENTRIES.map(({ href, key, icon: Icon }) => {
           const active = isActive(pathname, href);
           return (
             <Link
@@ -36,7 +38,7 @@ export function TabBar({ className }: { className?: string }) {
               )}
             >
               <Icon className="size-[21px]" strokeWidth={2} />
-              {short}
+              {t(`${key}.short`)}
             </Link>
           );
         })}

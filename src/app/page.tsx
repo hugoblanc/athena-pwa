@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { FeedClient } from "@/components/feed/feed-client";
 import type { FeedType } from "@/components/feed/feed-utils";
 import { mediaKeysForType } from "@/components/feed/feed-utils";
@@ -32,6 +33,7 @@ export default async function FeedPage({
   const sp = await searchParams;
   const terms = parseTerms(sp.q);
   const type = parseType(sp.type);
+  const t = await getTranslations("feed");
 
   let medias: ListMetaMedia[] = [];
   let initialPage: UnifiedPage<ContentLite> = {
@@ -56,7 +58,7 @@ export default async function FeedPage({
   return (
     <div className="mx-auto max-w-5xl px-5 pt-4 lg:pt-6">
       <h1 className="mb-4 font-display text-[28px] font-extrabold tracking-[-0.02em]">
-        Fil d&apos;actu
+        {t("title")}
       </h1>
 
       <FeedClient

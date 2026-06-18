@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AudioPlayer } from "@/components/player/audio-player";
@@ -54,10 +55,11 @@ export function AppShell({ children }: { children: ReactNode }) {
  * seule conversion visée (installer l'app / lire le contenu).
  */
 function FunnelShell({ children }: { children: ReactNode }) {
+  const t = useTranslations("common");
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="flex items-center justify-center border-b border-border/60 px-5 py-3.5">
-        <Link href="/" aria-label="Accueil Athena">
+        <Link href="/" aria-label={t("home")}>
           <Brand />
         </Link>
       </header>

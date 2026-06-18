@@ -24,7 +24,7 @@ export function SettingsList({
 }
 
 const rowBase =
-  "flex min-h-[56px] w-full items-center gap-3.5 px-4 py-3 text-left text-text transition-colors hover:bg-surface-2";
+  "flex min-h-[56px] w-full items-center gap-3.5 px-4 py-3 text-start text-text transition-colors hover:bg-surface-2";
 
 interface RowProps {
   icon: LucideIcon;
@@ -44,7 +44,7 @@ export function SettingsLinkRow({
       <Icon className="size-[18px] shrink-0 text-text-dim" aria-hidden="true" />
       <span className="flex-1 text-[15px] font-medium">{label}</span>
       <ChevronRight
-        className="size-[18px] shrink-0 text-text-faint"
+        className="size-[18px] shrink-0 text-text-faint rtl:rotate-180"
         aria-hidden="true"
       />
     </Link>

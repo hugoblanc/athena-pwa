@@ -1,0 +1,50 @@
+{
+  "common": {
+    "retry": "Réessayer",
+    "cancel": "Annuler",
+    "home": "Accueil Athena",
+    "language": "Langue"
+  },
+  "nav": {
+    "feed": { "label": "Fil d'actu", "short": "Fil" },
+    "medias": { "label": "Médias", "short": "Médias" },
+    "podcasts": { "label": "Podcasts", "short": "Podcasts" },
+    "laws": { "label": "Propositions de loi", "short": "Lois" },
+    "qa": { "label": "Demander à Athena", "short": "Athena" }
+  },
+  "feed": {
+    "title": "Fil d'actu",
+    "searchPlaceholder": "Rechercher dans le fil",
+    "loadingMore": "Chargement de plus de contenus…",
+    "recentlyPublished": "Récemment publié",
+    "errorPage": "Impossible de charger le fil.",
+    "errorMore": "Échec du chargement.",
+    "resetFilters": "Réinitialiser les filtres",
+    "emptyTitle": "Aucun résultat",
+    "emptyDescTerms": "Aucun contenu pour « {terms} ».",
+    "emptyDescTermsFiltered": "Aucun contenu pour « {terms} » avec ce filtre.",
+    "emptyDescFilter": "Aucun contenu pour ce filtre.",
+    "chips": {
+      "all": "Tout",
+      "video": "Vidéos",
+      "article": "Articles"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "serverError": "Profil serveur indisponible. Votre identité de base reste affichée.",
+    "sectionSettings": "Réglages",
+    "sectionAbout": "À propos",
+    "notifPrefs": "Préférences de notification",
+    "darkTheme": "Thème sombre",
+    "darkThemeToggle": "Activer le thème sombre",
+    "roadmap": "Roadmap",
+    "about": "Informations",
+    "privacy": "Confidentialité",
+    "terms": "Conditions d'utilisation",
+    "signOut": "Se déconnecter",
+    "signOutConfirmTitle": "Se déconnecter ?",
+    "signOutConfirmBody": "Vous pourrez vous reconnecter à tout moment. La consultation du contenu reste libre sans compte.",
+    "signOutPending": "Déconnexion…"
+  }
+}

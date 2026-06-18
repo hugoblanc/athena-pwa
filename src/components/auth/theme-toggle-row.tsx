@@ -1,6 +1,7 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useSyncExternalStore } from "react";
 import { Switch } from "@/components/ui/switch";
@@ -21,19 +22,20 @@ function useMounted() {
 export function ThemeToggleRow() {
   const { resolvedTheme, setTheme } = useTheme();
   const mounted = useMounted();
+  const t = useTranslations("profile");
 
   const isDark = !mounted || resolvedTheme === "dark";
 
   return (
     <SettingsRow
       icon={isDark ? Moon : Sun}
-      label="Thème sombre"
+      label={t("darkTheme")}
       trailing={
         <Switch
           checked={isDark}
           disabled={!mounted}
           onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
-          aria-label="Activer le thème sombre"
+          aria-label={t("darkThemeToggle")}
         />
       }
     />

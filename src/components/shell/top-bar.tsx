@@ -1,15 +1,19 @@
 "use client";
 
 import { Search, Settings } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
+import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
 import { IconButton } from "@/components/ui/button";
+import { trackFeature } from "@/lib/analytics";
 import { cn } from "@/lib/cn";
 import { Brand } from "./brand";
 
 /** Barre supérieure mobile (< lg) : marque + actions. */
 export function TopBar({ className }: { className?: string }) {
+  const tc = useTranslations("common");
   return (
     <header
       className={cn(
@@ -18,7 +22,8 @@ export function TopBar({ className }: { className?: string }) {
       )}
     >
       <Brand />
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
+        <LocaleSwitcher label={tc("language")} compact />
         <IconButton aria-label="Rechercher">
           <Search />
         </IconButton>
@@ -48,7 +53,10 @@ export function ThemeToggle() {
   return (
     <IconButton
       aria-label={isDark ? "Passer en clair" : "Passer en sombre"}
-      onClick={() => setTheme(isDark ? "light" : "dark")}
+      onClick={() => {
+        trackFeature("theme_toggle");
+        setTheme(isDark ? "light" : "dark");
+      }}
     >
       {isDark ? <Sun /> : <Moon />}
     </IconButton>

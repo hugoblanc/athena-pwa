@@ -1,0 +1,51 @@
+{
+  "_comment": "TODO relecture par un locuteur natif persan avant prod. Traductions générées, non validées. La référence reste fr.json.",
+  "common": {
+    "retry": "تلاش مجدد",
+    "cancel": "لغو",
+    "home": "خانهٔ آتنا",
+    "language": "زبان"
+  },
+  "nav": {
+    "feed": { "label": "تازه‌ها", "short": "تازه‌ها" },
+    "medias": { "label": "رسانه‌ها", "short": "رسانه‌ها" },
+    "podcasts": { "label": "پادکست‌ها", "short": "پادکست‌ها" },
+    "laws": { "label": "طرح‌های قانونی", "short": "قوانین" },
+    "qa": { "label": "از آتنا بپرس", "short": "آتنا" }
+  },
+  "feed": {
+    "title": "تازه‌ها",
+    "searchPlaceholder": "جستجو در تازه‌ها",
+    "loadingMore": "در حال بارگذاری محتوای بیشتر…",
+    "recentlyPublished": "به‌تازگی منتشرشده",
+    "errorPage": "بارگذاری تازه‌ها ممکن نشد.",
+    "errorMore": "بارگذاری ناموفق بود.",
+    "resetFilters": "بازنشانی فیلترها",
+    "emptyTitle": "نتیجه‌ای یافت نشد",
+    "emptyDescTerms": "محتوایی برای «{terms}» وجود ندارد.",
+    "emptyDescTermsFiltered": "محتوایی برای «{terms}» با این فیلتر وجود ندارد.",
+    "emptyDescFilter": "محتوایی برای این فیلتر وجود ندارد.",
+    "chips": {
+      "all": "همه",
+      "video": "ویدیوها",
+      "article": "مقاله‌ها"
+    }
+  },
+  "profile": {
+    "title": "نمایه",
+    "serverError": "نمایهٔ سرور در دسترس نیست. اطلاعات پایهٔ شما همچنان نمایش داده می‌شود.",
+    "sectionSettings": "تنظیمات",
+    "sectionAbout": "درباره",
+    "notifPrefs": "تنظیمات اعلان‌ها",
+    "darkTheme": "پوستهٔ تیره",
+    "darkThemeToggle": "فعال‌سازی پوستهٔ تیره",
+    "roadmap": "نقشهٔ راه",
+    "about": "اطلاعات",
+    "privacy": "حریم خصوصی",
+    "terms": "شرایط استفاده",
+    "signOut": "خروج",
+    "signOutConfirmTitle": "خارج می‌شوید؟",
+    "signOutConfirmBody": "هر زمان می‌توانید دوباره وارد شوید. مرور محتوا بدون حساب کاربری آزاد است.",
+    "signOutPending": "در حال خروج…"
+  }
+}
