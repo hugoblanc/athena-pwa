@@ -152,8 +152,8 @@ export function DismissableCard({
           type="button"
           onClick={() => onDismiss(contentId)}
           aria-label={t("dismissAriaLabel")}
-          // Décalé à gauche du bouton bookmark (lui en top-2 right-2) pour ne pas se chevaucher.
-          className="absolute top-2 right-11 z-10 hidden rounded-full border border-border bg-surface/90 p-1 text-text-dim opacity-0 backdrop-blur-sm transition-opacity hover:text-text group-hover:opacity-100 lg:flex"
+          // Coin opposé au bookmark (lui en top-2 right-2) pour ne pas se chevaucher.
+          className="absolute top-2 left-2 z-10 hidden rounded-full border border-border bg-surface/90 p-1 text-text-dim opacity-0 backdrop-blur-sm transition-opacity hover:text-text group-hover:opacity-100 lg:flex"
         >
           <X className="size-3.5" aria-hidden />
         </button>

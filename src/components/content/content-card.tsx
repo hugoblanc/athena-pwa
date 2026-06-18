@@ -122,7 +122,7 @@ export function HeroCard({
             // eslint-disable-next-line @next/next/no-img-element
             <img src={data.image} alt="" className="size-full object-cover" />
           )}
-          <span className="absolute left-3 top-3 rounded-[7px] bg-black/55 px-2.5 py-[5px] text-[11px] font-bold uppercase tracking-[0.05em] text-white backdrop-blur-sm">
+          <span className="absolute bottom-3 left-3 rounded-[7px] bg-black/55 px-2.5 py-[5px] text-[11px] font-bold uppercase tracking-[0.05em] text-white backdrop-blur-sm">
             {data.source}
           </span>
         </div>

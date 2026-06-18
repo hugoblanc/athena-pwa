@@ -1,19 +1,22 @@
 "use client";
 
-import { Search, Settings } from "lucide-react";
+import { Bookmark, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
 import { IconButton } from "@/components/ui/button";
 import { trackFeature } from "@/lib/analytics";
 import { cn } from "@/lib/cn";
+import { AccountButton } from "./account-nav";
 import { Brand } from "./brand";
 
 /** Barre supérieure mobile (< lg) : marque + actions. */
 export function TopBar({ className }: { className?: string }) {
   const tc = useTranslations("common");
+  const trl = useTranslations("readingList");
   return (
     <header
       className={cn(
@@ -24,10 +27,18 @@ export function TopBar({ className }: { className?: string }) {
       <Brand />
       <div className="flex items-center gap-2">
         <LocaleSwitcher label={tc("language")} compact />
+        <Link
+          href="/reading-list"
+          aria-label={trl("title")}
+          className="grid size-9 place-items-center rounded-full text-text-dim transition-colors hover:bg-surface-2 hover:text-text"
+        >
+          <Bookmark className="size-[19px]" />
+        </Link>
         <IconButton aria-label="Rechercher">
           <Search />
         </IconButton>
         <ThemeToggle />
+        <AccountButton />
       </div>
     </header>
   );

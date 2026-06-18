@@ -1,10 +1,12 @@
 "use client";
 
+import { Bookmark } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
 import { cn } from "@/lib/cn";
+import { AccountNav } from "./account-nav";
 import { Brand } from "./brand";
 import { NAV_ENTRIES } from "./nav-config";
 
@@ -17,6 +19,7 @@ export function Sidebar({ className }: { className?: string }) {
   const pathname = usePathname();
   const t = useTranslations("nav");
   const tc = useTranslations("common");
+  const trl = useTranslations("readingList");
 
   return (
     <aside
@@ -48,11 +51,31 @@ export function Sidebar({ className }: { className?: string }) {
             </Link>
           );
         })}
+
+        {/* Liste de lecture (bookmarks) — accès direct, hors NAV_ENTRIES. */}
+        <Link
+          href="/reading-list"
+          aria-current={
+            isActive(pathname, "/reading-list") ? "page" : undefined
+          }
+          className={cn(
+            "flex items-center gap-[13px] rounded-[11px] px-[14px] py-[11px] text-[14.5px] font-semibold transition-colors",
+            isActive(pathname, "/reading-list")
+              ? "bg-primary text-on-primary"
+              : "text-text-dim hover:bg-surface-2 hover:text-text",
+          )}
+        >
+          <Bookmark className="size-[19px] shrink-0" strokeWidth={2} />
+          {trl("title")}
+        </Link>
       </nav>
 
-      {/* Sélecteur de langue, poussé en bas du menu. */}
-      <div className="mt-auto px-1 pt-4">
-        <LocaleSwitcher label={tc("language")} />
+      {/* Compte + langue, poussés en bas du menu. */}
+      <div className="mt-auto flex flex-col gap-2 pt-4">
+        <AccountNav />
+        <div className="px-1">
+          <LocaleSwitcher label={tc("language")} />
+        </div>
       </div>
     </aside>
   );
