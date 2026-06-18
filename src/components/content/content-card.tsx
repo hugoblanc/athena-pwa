@@ -1,6 +1,6 @@
 "use client";
 
-import { Play } from "lucide-react";
+import { Clock, Play } from "lucide-react";
 import Link from "next/link";
 import { Tag } from "@/components/ui/tag";
 import { cn } from "@/lib/cn";
@@ -14,6 +14,9 @@ export interface ContentCardData {
   /** image de vignette (optionnelle) */
   image?: string;
   isVideo?: boolean;
+  /** Temps de lecture pré-calculé (ex : « 4 min de lecture »). Absent si wordCount
+   *  non exposé par le backend ou si c'est une vidéo. */
+  readingTime?: string;
 }
 
 /** Carte de contenu en liste (feed). */
@@ -47,7 +50,15 @@ export function ContentCard({ data }: { data: ContentCardData }) {
         <h3 className="mt-[7px] mb-1.5 line-clamp-2 font-display text-[15.5px] font-bold leading-tight tracking-[-0.01em]">
           {data.title}
         </h3>
-        <div className="text-xs text-text-dim">{data.meta}</div>
+        <div className="flex flex-wrap items-center gap-x-2 text-xs text-text-dim">
+          <span>{data.meta}</span>
+          {!data.isVideo && data.readingTime && (
+            <span className="flex items-center gap-1">
+              <Clock className="size-3" aria-hidden />
+              {data.readingTime}
+            </span>
+          )}
+        </div>
       </div>
     </Link>
   );
@@ -61,6 +72,9 @@ export interface HeroCardData {
   excerpt: string;
   meta: string;
   image?: string;
+  isVideo?: boolean;
+  /** Temps de lecture pré-calculé — absent si wordCount non exposé ou si vidéo. */
+  readingTime?: string;
 }
 
 /** Carte « à la une » en tête de feed. */
@@ -101,7 +115,15 @@ export function HeroCard({
           {data.title}
         </h2>
         <p className="text-sm text-text-dim">{data.excerpt}</p>
-        <div className="mt-3.5 text-xs text-text-dim">{data.meta}</div>
+        <div className="mt-3.5 flex flex-wrap items-center gap-x-2 text-xs text-text-dim">
+          <span>{data.meta}</span>
+          {!data.isVideo && data.readingTime && (
+            <span className="flex items-center gap-1">
+              <Clock className="size-3" aria-hidden />
+              {data.readingTime}
+            </span>
+          )}
+        </div>
       </div>
     </Link>
   );

@@ -15,7 +15,7 @@ import {
   resolveContentId,
 } from "@/lib/api/content";
 import type { Content, ShareableContentResponse } from "@/lib/api/types";
-import { formatDate } from "@/lib/format";
+import { formatDate, readingTimeFromText } from "@/lib/format";
 import { mediaLogoSrc } from "@/lib/media";
 import { buildShareUrl, sharePath } from "@/lib/site";
 
@@ -48,14 +48,6 @@ async function loadShareable(
   }
 }
 
-/** ~200 mots/min sur le texte brut, si disponible. */
-function readingTime(content: Content): string | null {
-  const text = content.plainText?.trim();
-  if (!text) return null;
-  const words = text.split(/\s+/).length;
-  const min = Math.max(1, Math.round(words / 200));
-  return `${min} min de lecture`;
-}
 
 export async function generateMetadata({
   params,
@@ -106,7 +98,7 @@ export default async function ContentDetailPage({
   const kicker = `${isVideo ? "Vidéo" : "Article"} · ${sourceTitle}`;
   const heroImage = share?.image?.url ?? content.image?.url;
   const originalUrl = share?.originalUrl;
-  const minutes = readingTime(content);
+  const minutes = readingTimeFromText(content.plainText);
   const href = `/content/${key}/${id}`;
   const shareUrl = buildShareUrl(sharePath.content(key, id));
 

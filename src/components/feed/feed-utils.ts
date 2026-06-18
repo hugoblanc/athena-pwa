@@ -3,7 +3,7 @@ import type {
   HeroCardData,
 } from "@/components/content/content-card";
 import type { ContentLite, ListMetaMedia } from "@/lib/api/types";
-import { formatRelative } from "@/lib/format";
+import { formatRelative, readingTimeFromWordCount } from "@/lib/format";
 
 /** Onglets de type (le filtre `type` API n'existe pas → dérivé en `mediaKeys`). */
 export type FeedType = "all" | "video" | "article";
@@ -47,18 +47,23 @@ export function contentHref(c: ContentLite): string {
 
 /** `ContentLite` → données de `ContentCard`. */
 export function toCardData(c: ContentLite): ContentCardData {
+  const isVideo = c.metaMedia.type === "YOUTUBE";
   return {
     href: contentHref(c),
     tag: `${typeLabel(c.metaMedia.type)} · ${c.metaMedia.title}`,
     title: c.title,
     meta: formatRelative(c.publishedAt),
     image: c.image?.url,
-    isVideo: c.metaMedia.type === "YOUTUBE",
+    isVideo,
+    // Badge temps de lecture : calculé depuis wordCount si le backend l'expose,
+    // sinon absent (pas de badge trompeur). Vidéos exclues.
+    readingTime: isVideo ? undefined : readingTimeFromWordCount(c.wordCount) ?? undefined,
   };
 }
 
 /** `ContentLite` → données de `HeroCard` (1er contenu du fil). */
 export function toHeroData(c: ContentLite): HeroCardData {
+  const isVideo = c.metaMedia.type === "YOUTUBE";
   return {
     href: contentHref(c),
     source: c.metaMedia.title,
@@ -67,5 +72,7 @@ export function toHeroData(c: ContentLite): HeroCardData {
     excerpt: "",
     meta: formatRelative(c.publishedAt),
     image: c.image?.url,
+    isVideo,
+    readingTime: isVideo ? undefined : readingTimeFromWordCount(c.wordCount) ?? undefined,
   };
 }
