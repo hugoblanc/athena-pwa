@@ -14,11 +14,20 @@ export interface ContentCardData {
 }
 
 /** Carte de contenu en liste (feed). */
-export function ContentCard({ data }: { data: ContentCardData }) {
+export function ContentCard({
+  data,
+  className,
+}: {
+  data: ContentCardData;
+  className?: string;
+}) {
   return (
     <Link
       href={data.href}
-      className="group flex gap-3.5 rounded-[var(--radius)] border border-border bg-surface p-3.5 shadow-elev-1 transition-[transform,border-color] duration-200 hover:-translate-y-px hover:border-primary"
+      className={cn(
+        "group flex gap-3.5 rounded-[var(--radius)] border border-border bg-surface p-3.5 shadow-elev-1 transition-[transform,border-color] duration-200 hover:-translate-y-px hover:border-primary",
+        className,
+      )}
     >
       <div className="relative size-[88px] shrink-0 overflow-hidden rounded-[var(--radius-sm)] bg-gradient-to-br from-surface-2 to-border">
         {data.image && (

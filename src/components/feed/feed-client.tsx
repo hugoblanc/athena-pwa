@@ -1,12 +1,13 @@
 "use client";
 
-import { SearchX } from "lucide-react";
+import { EyeOff, SearchX } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ContentCard, HeroCard } from "@/components/content/content-card";
 import { ContentListSkeleton } from "@/components/content/content-card-skeleton";
 import { Button } from "@/components/ui/button";
+import { DismissToast } from "@/components/ui/dismiss-toast";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FilterChips } from "@/components/ui/filter-chips";
 import { InfiniteSentinel } from "@/components/ui/infinite-sentinel";
@@ -14,6 +15,7 @@ import { SearchField } from "@/components/ui/search-field";
 import { getLastContent } from "@/lib/api/content";
 import type { UnifiedPage } from "@/lib/api/pagination";
 import type { ContentLite, ListMetaMedia } from "@/lib/api/types";
+import { useDismissedFeed } from "@/lib/dismissed-feed";
 import {
   FEED_TYPES,
   type FeedType,
@@ -21,6 +23,7 @@ import {
   toCardData,
   toHeroData,
 } from "./feed-utils";
+import { DismissableCard } from "./dismissable-card";
 import { FeedSkeleton } from "./feed-skeleton";
 
 const PAGE_SIZE = 10;
@@ -52,6 +55,10 @@ export function FeedClient({
   const [error, setError] = useState<"page" | "more" | null>(null);
   // Incrémenté pour re-déclencher le fetch page 1 (réessai sur erreur).
   const [retryKey, setRetryKey] = useState(0);
+
+  // Dismiss
+  const { dismissed, dismiss, undoDismiss } = useDismissedFeed();
+  const [pendingUndo, setPendingUndo] = useState<string | null>(null);
 
   // Évite que le re-fetch initial (déclenché par l'effet) écrase la 1ère page SSR.
   const firstRender = useRef(true);
@@ -125,8 +132,29 @@ export function FeedClient({
     setType("all");
   }
 
-  const [hero, ...rest] = items;
-  const isEmpty = items.length === 0;
+  function handleDismiss(contentId: string) {
+    dismiss(contentId);
+    setPendingUndo(contentId);
+  }
+
+  function handleUndo() {
+    if (pendingUndo) undoDismiss(pendingUndo);
+    setPendingUndo(null);
+  }
+
+  // Filtre les articles masqués
+  const visibleItems = items.filter((c) => !dismissed.has(c.contentId));
+
+  // Si la page visible est presque vide et qu'il reste des pages, charger plus
+  useEffect(() => {
+    if (visibleItems.length < 3 && hasNext && !loadingMore && !refetching) {
+      void loadMore();
+    }
+  }, [visibleItems.length, hasNext, loadingMore, refetching, loadMore]);
+
+  const [hero, ...rest] = visibleItems;
+  const isEmpty = visibleItems.length === 0;
+  const allDismissed = items.length > 0 && visibleItems.length === 0 && !hasNext;
   const filtered = Boolean(terms) || type !== "all";
 
   return (
@@ -157,6 +185,12 @@ export function FeedClient({
           message={t("errorPage")}
           onRetry={() => setRetryKey((k) => k + 1)}
         />
+      ) : allDismissed ? (
+        <EmptyState
+          icon={EyeOff}
+          title={t("emptyTitle")}
+          description={t("emptyDescDismissed")}
+        />
       ) : isEmpty ? (
         <EmptyState
           icon={SearchX}
@@ -178,7 +212,15 @@ export function FeedClient({
         />
       ) : (
         <>
-          {hero && <HeroCard data={toHeroData(hero)} className="mb-[18px]" />}
+          {hero && (
+            <DismissableCard
+              contentId={hero.contentId}
+              onDismiss={handleDismiss}
+              className="mb-[18px]"
+            >
+              <HeroCard data={toHeroData(hero)} />
+            </DismissableCard>
+          )}
 
           {rest.length > 0 && (
             <h2 className="mb-3.5 mt-[22px] font-display text-[17px] font-extrabold tracking-[-0.01em]">
@@ -188,7 +230,13 @@ export function FeedClient({
 
           <div className="grid gap-3 lg:grid-cols-2">
             {rest.map((c) => (
-              <ContentCard key={c.id} data={toCardData(c)} />
+              <DismissableCard
+                key={c.id}
+                contentId={c.contentId}
+                onDismiss={handleDismiss}
+              >
+                <ContentCard data={toCardData(c)} />
+              </DismissableCard>
             ))}
           </div>
 
@@ -212,6 +260,13 @@ export function FeedClient({
             loading={loadingMore}
           />
         </>
+      )}
+
+      {pendingUndo && (
+        <DismissToast
+          onUndo={handleUndo}
+          onClose={() => setPendingUndo(null)}
+        />
       )}
     </div>
   );

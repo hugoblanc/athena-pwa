@@ -29,7 +29,11 @@
       "all": "همه",
       "video": "ویدیوها",
       "article": "مقاله‌ها"
-    }
+    },
+    "dismissed": "مقاله پنهان شد",
+    "undoDismiss": "لغو",
+    "dismissAriaLabel": "پنهان کردن این مقاله",
+    "emptyDescDismissed": "همه مقاله‌ها را پنهان کردید. بعداً برای محتوای جدید برگردید."
   },
   "profile": {
     "title": "نمایه",
