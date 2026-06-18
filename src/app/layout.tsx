@@ -6,6 +6,7 @@ import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ServiceWorkerRegistrar } from "@/components/pwa/service-worker-registrar";
 import { UsageTracker } from "@/components/analytics/usage-tracker";
+import { IranSurveyPrompt } from "@/components/survey/iran-survey-prompt";
 import { SITE_ORIGIN } from "@/lib/site";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
@@ -82,6 +83,7 @@ export default async function RootLayout({
         </NextIntlClientProvider>
         <ServiceWorkerRegistrar />
         <UsageTracker />
+        <IranSurveyPrompt />
       </body>
     </html>
   );
