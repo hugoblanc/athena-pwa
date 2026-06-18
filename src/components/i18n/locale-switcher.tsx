@@ -55,8 +55,8 @@ export function LocaleSwitcher({
       title={label}
       className={
         compact
-          ? "rounded-[var(--radius-sm)] border border-border bg-surface-2 px-2 py-1.5 text-[13px] font-semibold text-text outline-none focus:border-primary disabled:opacity-50"
-          : "w-full rounded-[var(--radius-sm)] border border-border bg-surface-2 px-2.5 py-2 text-[13.5px] font-medium text-text outline-none focus:border-primary disabled:opacity-50"
+          ? "rounded-[var(--radius-sm)] border border-border bg-surface-2 py-1.5 pl-2 pr-3 text-[13px] font-semibold text-text outline-none focus:border-primary disabled:opacity-50"
+          : "w-full rounded-[var(--radius-sm)] border border-border bg-surface-2 py-2 pl-2.5 pr-3 text-[13.5px] font-medium text-text outline-none focus:border-primary disabled:opacity-50"
       }
     >
       {locales.map((l) => (
