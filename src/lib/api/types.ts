@@ -15,6 +15,8 @@ export interface MetaMedia {
   donation?: string;
   isDonationActivated?: boolean;
   notification?: string;
+  description?: string;
+  countryCode?: string;
 }
 
 export interface ListMetaMedia {
