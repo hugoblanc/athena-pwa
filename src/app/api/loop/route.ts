@@ -9,8 +9,29 @@ import { API_BASE_URL } from "@/lib/api/config";
  * n'est stockée — l'IP ne quitte jamais ce handler.
  */
 
-const EVENTS = new Set(["preview_view", "value_reached", "reshare", "install"]);
-const REF_TYPES = new Set(["content", "law", "podcast", "qa"]);
+const EVENTS = new Set([
+  // Growth loop (partage)
+  "preview_view",
+  "value_reached",
+  "reshare",
+  "install",
+  // Usage produit
+  "screen_view",
+  "feature_use",
+  "play",
+  "session_start",
+]);
+const REF_TYPES = new Set([
+  // Catalogue
+  "content",
+  "law",
+  "podcast",
+  "qa",
+  // Dimensions d'usage
+  "screen",
+  "feature",
+  "session",
+]);
 
 /** Sel rotatif quotidien (UTC) : même jour → même hash, change chaque jour. */
 function daySalt(): string {

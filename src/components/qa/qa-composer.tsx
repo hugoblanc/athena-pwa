@@ -7,6 +7,7 @@ import {
   useState,
   type KeyboardEvent,
 } from "react";
+import { trackFeature } from "@/lib/analytics";
 
 const MAX_HEIGHT = 140; // ~5 lignes
 
@@ -40,6 +41,8 @@ export function QaComposer({
   function submit() {
     const v = value.trim();
     if (!v || busy || offline) return;
+    // On compte qu'une question a été posée — JAMAIS son contenu (vie privée).
+    trackFeature("qa_ask");
     onSend(v);
     setValue("");
   }

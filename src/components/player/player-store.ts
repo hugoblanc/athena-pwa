@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { trackFeature, trackPlay } from "@/lib/analytics";
 
 export interface Track {
   id: string;
@@ -10,6 +11,8 @@ export interface Track {
   artwork?: string;
   /** lien interne ouvert au clic sur le player */
   href?: string;
+  /** Attribution analytics (agrégée) : top contenus joués. Optionnel. */
+  analytics?: { refType: "content" | "podcast"; refId: string };
 }
 
 interface PlayerState {
@@ -41,8 +44,14 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
   duration: 0,
   playbackRate: 1,
   seekRequest: null,
-  play: (track) =>
-    set({ track, isPlaying: true, currentTime: 0, duration: 0 }),
+  play: (track) => {
+    // Mesure agrégée : nombre de lectures + top contenus joués (si attribué).
+    trackFeature("player_play");
+    if (track.analytics) {
+      trackPlay(track.analytics.refType, track.analytics.refId);
+    }
+    set({ track, isPlaying: true, currentTime: 0, duration: 0 });
+  },
   toggle: () => set({ isPlaying: !get().isPlaying }),
   setPlaying: (isPlaying) => set({ isPlaying }),
   setProgress: (currentTime, duration) => set({ currentTime, duration }),

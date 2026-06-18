@@ -50,6 +50,7 @@ export function PodcastPlayPanel({ podcast }: { podcast: Podcast }) {
     audioUrl: podcast.audioUrl,
     artwork,
     href: `/podcasts/${podcast.id}`,
+    analytics: { refType: "podcast", refId: String(podcast.id) },
   };
 
   function onPlay() {

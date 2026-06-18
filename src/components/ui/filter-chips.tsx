@@ -1,5 +1,6 @@
 "use client";
 
+import { trackFeature } from "@/lib/analytics";
 import { cn } from "@/lib/cn";
 
 export interface ChipOption {
@@ -34,7 +35,10 @@ export function FilterChips({
             key={opt.value}
             role="tab"
             aria-selected={active}
-            onClick={() => onChange(opt.value)}
+            onClick={() => {
+              if (opt.value !== value) trackFeature("filter");
+              onChange(opt.value);
+            }}
             className={cn(
               "shrink-0 rounded-full border border-transparent px-[15px] py-2 text-[13px] font-semibold whitespace-nowrap transition-colors",
               active

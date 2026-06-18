@@ -1,5 +1,6 @@
 "use client";
 
+import { trackFeature } from "@/lib/analytics";
 import { authFetch } from "./auth-client";
 
 /** Clé VAPID publique (injectée au build). */
@@ -42,6 +43,7 @@ export async function subscribeToPush(): Promise<PushSubscription> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(sub.toJSON()),
   });
+  trackFeature("notif_enable");
   return sub;
 }
 
@@ -56,6 +58,7 @@ export async function unsubscribeFromPush(): Promise<void> {
     body: JSON.stringify({ endpoint: sub.endpoint }),
   });
   await sub.unsubscribe();
+  trackFeature("notif_disable");
 }
 
 export async function currentPushSubscription(): Promise<PushSubscription | null> {

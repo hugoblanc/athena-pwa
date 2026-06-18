@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import { trackFeature } from "@/lib/analytics";
 import { Button } from "./button";
 
 /**
@@ -18,24 +19,30 @@ export function InfiniteSentinel({
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
+  // Mesure d'engagement : on compte chaque chargement de page suivante.
+  const loadMore = useCallback(() => {
+    trackFeature("load_more");
+    onLoadMore();
+  }, [onLoadMore]);
+
   useEffect(() => {
     const el = ref.current;
     if (!el || !hasNext || loading) return;
     const obs = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting) onLoadMore();
+        if (entries[0]?.isIntersecting) loadMore();
       },
       { rootMargin: "600px" },
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [hasNext, loading, onLoadMore]);
+  }, [hasNext, loading, loadMore]);
 
   if (!hasNext) return null;
 
   return (
     <div ref={ref} className="flex justify-center py-6">
-      <Button variant="secondary" onClick={onLoadMore} disabled={loading}>
+      <Button variant="secondary" onClick={loadMore} disabled={loading}>
         {loading ? "Chargement…" : "Charger plus"}
       </Button>
     </div>

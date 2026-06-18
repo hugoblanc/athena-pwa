@@ -43,6 +43,7 @@ export function PodcastCard({ podcast }: { podcast: Podcast }) {
       audioUrl: podcast.audioUrl,
       artwork,
       href,
+      analytics: { refType: "podcast", refId: String(podcast.id) },
     });
   }
 

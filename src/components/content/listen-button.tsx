@@ -51,6 +51,7 @@ export function ListenButton({ track }: { track: ListenTrackInfo }) {
         audioUrl,
         artwork: track.artwork,
         href: track.href,
+        analytics: { refType: "content", refId: track.id },
       });
     } finally {
       setLoading(false);

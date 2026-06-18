@@ -2,7 +2,7 @@
 
 import { Check, Share2 } from "lucide-react";
 import { useState } from "react";
-import { track } from "@/lib/analytics";
+import { track, trackFeature } from "@/lib/analytics";
 import type { ShareRef, ShareRefType } from "@/lib/site";
 import { Button, IconButton } from "./button";
 
@@ -39,6 +39,8 @@ export function ShareButton({
   const [copied, setCopied] = useState(false);
 
   function emit() {
+    // Usage produit : on compte tout partage réussi (avec ou sans attribution).
+    trackFeature("share_open");
     if (tracking)
       track("reshare", {
         refType: tracking.refType,
