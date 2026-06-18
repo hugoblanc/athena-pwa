@@ -1,6 +1,6 @@
 "use client";
 
-import { Languages } from "lucide-react";
+import { ChevronDown, Languages } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useTransition, type ChangeEvent } from "react";
@@ -47,24 +47,32 @@ export function LocaleSwitcher({
 }) {
   const { locale, pending, onChange } = useLocaleSwitch();
   return (
-    <select
-      value={locale}
-      onChange={onChange}
-      disabled={pending}
-      aria-label={label}
-      title={label}
-      className={
-        compact
-          ? "rounded-[var(--radius-sm)] border border-border bg-surface-2 py-1.5 pl-2 pr-3 text-[13px] font-semibold text-text outline-none focus:border-primary disabled:opacity-50"
-          : "w-full rounded-[var(--radius-sm)] border border-border bg-surface-2 py-2 pl-2.5 pr-3 text-[13.5px] font-medium text-text outline-none focus:border-primary disabled:opacity-50"
-      }
-    >
-      {locales.map((l) => (
-        <option key={l} value={l}>
-          {localeFlags[l]} {compact ? localeCodes[l] : localeNames[l]}
-        </option>
-      ))}
-    </select>
+    // appearance-none : on masque la flèche native (collée au bord en Chrome,
+    // insensible au padding-right) et on dessine la nôtre avec une vraie marge.
+    <div className={compact ? "relative inline-flex" : "relative w-full"}>
+      <select
+        value={locale}
+        onChange={onChange}
+        disabled={pending}
+        aria-label={label}
+        title={label}
+        className={
+          compact
+            ? "w-full appearance-none rounded-[var(--radius-sm)] border border-border bg-surface-2 py-1.5 ps-2 pe-8 text-[13px] font-semibold text-text outline-none focus:border-primary disabled:opacity-50"
+            : "w-full appearance-none rounded-[var(--radius-sm)] border border-border bg-surface-2 py-2 ps-2.5 pe-8 text-[13.5px] font-medium text-text outline-none focus:border-primary disabled:opacity-50"
+        }
+      >
+        {locales.map((l) => (
+          <option key={l} value={l}>
+            {localeFlags[l]} {compact ? localeCodes[l] : localeNames[l]}
+          </option>
+        ))}
+      </select>
+      <ChevronDown
+        aria-hidden
+        className="pointer-events-none absolute end-2.5 top-1/2 size-3.5 -translate-y-1/2 text-text-dim"
+      />
+    </div>
   );
 }
 
