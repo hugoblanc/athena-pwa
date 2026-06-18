@@ -46,14 +46,14 @@ export function contentHref(c: ContentLite): string {
 }
 
 /** `ContentLite` → données de `ContentCard`. */
-export function toCardData(c: ContentLite): ContentCardData {
+export function toCardData(c: ContentLite, ecoMode = false): ContentCardData {
   const isVideo = c.metaMedia.type === "YOUTUBE";
   return {
     href: contentHref(c),
     tag: `${typeLabel(c.metaMedia.type)} · ${c.metaMedia.title}`,
     title: c.title,
     meta: formatRelative(c.publishedAt),
-    image: c.image?.url,
+    image: ecoMode ? undefined : c.image?.url,
     isVideo,
     // Badge temps de lecture : calculé depuis wordCount si le backend l'expose,
     // sinon absent (pas de badge trompeur). Vidéos exclues.
@@ -62,7 +62,7 @@ export function toCardData(c: ContentLite): ContentCardData {
 }
 
 /** `ContentLite` → données de `HeroCard` (1er contenu du fil). */
-export function toHeroData(c: ContentLite): HeroCardData {
+export function toHeroData(c: ContentLite, ecoMode = false): HeroCardData {
   const isVideo = c.metaMedia.type === "YOUTUBE";
   return {
     href: contentHref(c),
@@ -71,7 +71,7 @@ export function toHeroData(c: ContentLite): HeroCardData {
     title: c.title,
     excerpt: "",
     meta: formatRelative(c.publishedAt),
-    image: c.image?.url,
+    image: ecoMode ? undefined : c.image?.url,
     isVideo,
     readingTime: isVideo ? undefined : readingTimeFromWordCount(c.wordCount) ?? undefined,
   };

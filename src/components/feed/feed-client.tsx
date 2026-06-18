@@ -14,6 +14,7 @@ import { SearchField } from "@/components/ui/search-field";
 import { getLastContent } from "@/lib/api/content";
 import type { UnifiedPage } from "@/lib/api/pagination";
 import type { ContentLite, ListMetaMedia } from "@/lib/api/types";
+import { useFeedPrefs } from "@/lib/feed-prefs";
 import {
   FEED_TYPES,
   type FeedType,
@@ -40,12 +41,18 @@ export function FeedClient({
   const pathname = usePathname();
   const t = useTranslations("feed");
 
+  const { prefs, setType: persistType } = useFeedPrefs();
+  // Type initial : préférence persistée si disponible (non-"all"), sinon initialType URL.
+  const [type, setType] = useState<FeedType>(() =>
+    prefs.type !== "all" ? prefs.type : initialType,
+  );
+  const ecoMode = prefs.ecoMode;
+
   const [items, setItems] = useState<ContentLite[]>(initialPage.items);
   const [page, setPage] = useState(initialPage.page);
   const [hasNext, setHasNext] = useState(initialPage.hasNext);
 
   const [terms, setTerms] = useState(initialTerms);
-  const [type, setType] = useState<FeedType>(initialType);
 
   const [loadingMore, setLoadingMore] = useState(false);
   const [refetching, setRefetching] = useState(false);
@@ -123,6 +130,7 @@ export function FeedClient({
   function resetFilters() {
     setTerms("");
     setType("all");
+    persistType("all");
   }
 
   const [hero, ...rest] = items;
@@ -141,7 +149,11 @@ export function FeedClient({
       <FilterChips
         options={FEED_TYPES.map((v) => ({ value: v, label: t(`chips.${v}`) }))}
         value={type}
-        onChange={(v) => setType(v as FeedType)}
+        onChange={(v) => {
+          const next = v as FeedType;
+          setType(next);
+          persistType(next);
+        }}
         className="mb-[18px]"
       />
 
@@ -178,7 +190,9 @@ export function FeedClient({
         />
       ) : (
         <>
-          {hero && <HeroCard data={toHeroData(hero)} className="mb-[18px]" />}
+          {hero && (
+            <HeroCard data={toHeroData(hero, ecoMode)} className="mb-[18px]" />
+          )}
 
           {rest.length > 0 && (
             <h2 className="mb-3.5 mt-[22px] font-display text-[17px] font-extrabold tracking-[-0.01em]">
@@ -188,7 +202,7 @@ export function FeedClient({
 
           <div className="grid gap-3 lg:grid-cols-2">
             {rest.map((c) => (
-              <ContentCard key={c.id} data={toCardData(c)} />
+              <ContentCard key={c.id} data={toCardData(c, ecoMode)} />
             ))}
           </div>
 

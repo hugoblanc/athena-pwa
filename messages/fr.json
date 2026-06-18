@@ -38,6 +38,8 @@
     "notifPrefs": "Préférences de notification",
     "darkTheme": "Thème sombre",
     "darkThemeToggle": "Activer le thème sombre",
+    "ecoMode": "Mode économie · sans images",
+    "ecoModeToggle": "Activer le mode économie (sans images)",
     "roadmap": "Roadmap",
     "about": "Informations",
     "privacy": "Confidentialité",

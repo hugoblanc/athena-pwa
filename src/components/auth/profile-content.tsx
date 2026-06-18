@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getMe } from "@/lib/api/user";
 import type { UserProfile } from "@/lib/api/types";
 import { useAuth } from "@/components/providers/auth-provider";
+import { EcoModeRow } from "./eco-mode-row";
 import { ProfileCard, type ProfileIdentity } from "./profile-card";
 import {
   SettingsLinkRow,
@@ -95,6 +96,7 @@ export function ProfileContent() {
           href="/profile/notifications"
         />
         <ThemeToggleRow />
+        <EcoModeRow />
         <LocaleSwitcherRow label={tc("language")} />
       </SettingsList>
 
