@@ -13,13 +13,18 @@
  *   saisi (questions QA, message du sondage). Le pays vient du GeoIP serveur de
  *   PostHog (pas besoin d'IP côté client).
  *
- * No-op si le token est absent (build/preview sans analytics).
+ * No-op si le token est absent (build/preview sans analytics) ou en local
+ * (localhost / 127.0.0.1) pour ne pas polluer les stats avec le dev.
  */
 import posthog from "posthog-js";
 
 const token = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN;
 
-if (token && typeof window !== "undefined") {
+const isLocalhost =
+  typeof window !== "undefined" &&
+  /^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname);
+
+if (token && typeof window !== "undefined" && !isLocalhost) {
   posthog.init(token, {
     // Proxy same-origin (cf. rewrites /ingest). ui_host = vrai domaine pour les
     // liens « ouvrir dans PostHog » côté toolbar.
