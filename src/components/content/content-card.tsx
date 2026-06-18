@@ -1,7 +1,10 @@
+"use client";
+
 import { Play } from "lucide-react";
 import Link from "next/link";
 import { Tag } from "@/components/ui/tag";
 import { cn } from "@/lib/cn";
+import { useReadArticles } from "@/lib/use-read-articles";
 
 export interface ContentCardData {
   href: string;
@@ -15,10 +18,17 @@ export interface ContentCardData {
 
 /** Carte de contenu en liste (feed). */
 export function ContentCard({ data }: { data: ContentCardData }) {
+  const { isRead, markRead } = useReadArticles();
+  const read = isRead(data.href);
+
   return (
     <Link
       href={data.href}
-      className="group flex gap-3.5 rounded-[var(--radius)] border border-border bg-surface p-3.5 shadow-elev-1 transition-[transform,border-color] duration-200 hover:-translate-y-px hover:border-primary"
+      onClick={() => markRead(data.href)}
+      className={cn(
+        "group flex gap-3.5 rounded-[var(--radius)] border border-border bg-surface p-3.5 shadow-elev-1 transition-[transform,border-color,opacity] duration-200 hover:-translate-y-px hover:border-primary",
+        read && "opacity-60 hover:opacity-100",
+      )}
     >
       <div className="relative size-[88px] shrink-0 overflow-hidden rounded-[var(--radius-sm)] bg-gradient-to-br from-surface-2 to-border">
         {data.image && (
@@ -61,11 +71,16 @@ export function HeroCard({
   data: HeroCardData;
   className?: string;
 }) {
+  const { isRead, markRead } = useReadArticles();
+  const read = isRead(data.href);
+
   return (
     <Link
       href={data.href}
+      onClick={() => markRead(data.href)}
       className={cn(
-        "block overflow-hidden rounded-[var(--radius)] border border-border bg-surface shadow-elev-1",
+        "block overflow-hidden rounded-[var(--radius)] border border-border bg-surface shadow-elev-1 transition-opacity duration-200",
+        read && "opacity-60 hover:opacity-100",
         className,
       )}
     >
