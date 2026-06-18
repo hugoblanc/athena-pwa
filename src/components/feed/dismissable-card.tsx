@@ -108,7 +108,11 @@ export function DismissableCard({
   const showDanger = swipeProgress > 0.1;
 
   return (
-    <div className={`group relative overflow-hidden ${className ?? ""}`}>
+    // overflow-hidden uniquement pendant le swipe/dismiss : sinon il rognerait
+    // le léger hover:-translate-y-px de la carte (bord haut coupé au survol).
+    <div
+      className={`group relative ${swiping || dismissing ? "overflow-hidden" : ""} ${className ?? ""}`}
+    >
       {/* Indicateur de danger visible sous la carte pendant le swipe */}
       {showDanger && (
         <div
