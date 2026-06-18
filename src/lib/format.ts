@@ -35,3 +35,21 @@ export function formatDuration(seconds: number | null | undefined): string {
   const rest = m % 60;
   return rest ? `${h} h ${rest}` : `${h} h`;
 }
+
+/** Temps de lecture estimé depuis le texte brut (~200 mots/min).
+ *  Retourne `"X min de lecture"` ou `null` si le texte est absent/vide. */
+export function readingTimeFromText(plainText: string | null | undefined): string | null {
+  const text = plainText?.trim();
+  if (!text) return null;
+  const words = text.split(/\s+/).length;
+  const min = Math.max(1, Math.round(words / 200));
+  return `${min} min de lecture`;
+}
+
+/** Temps de lecture estimé depuis un word count pré-calculé (~200 mots/min).
+ *  Retourne `"X min de lecture"` ou `null` si wordCount est absent/nul. */
+export function readingTimeFromWordCount(wordCount: number | null | undefined): string | null {
+  if (wordCount == null || wordCount <= 0) return null;
+  const min = Math.max(1, Math.round(wordCount / 200));
+  return `${min} min de lecture`;
+}

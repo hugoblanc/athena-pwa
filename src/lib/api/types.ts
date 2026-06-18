@@ -44,6 +44,10 @@ export interface ContentLite {
     logo: string;
     type: MetaMediaType;
   };
+  /** Nombre de mots pré-calculé — exposé par le backend quand disponible.
+   *  Absent de `/content/last` aujourd'hui : champ optionnel, prêt pour la
+   *  prochaine évolution backend (#320). */
+  wordCount?: number | null;
 }
 
 export interface Content extends ContentLite {
