@@ -14,7 +14,7 @@ export function MediaCard({ media }: { media: MetaMedia }) {
     >
       <Avatar src={mediaLogoSrc(media.logo)} name={media.title} size={48} square />
       <div className="min-w-0 flex-1">
-        <h3 className="truncate font-display text-[15.5px] font-bold">
+        <h3 className="truncate font-display text-[14px] font-bold sm:text-[15.5px]">
           {media.title}
         </h3>
         <div className="mt-0.5 flex items-center gap-1.5 text-xs text-text-dim">

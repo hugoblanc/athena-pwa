@@ -24,7 +24,7 @@ export default async function MediasPage() {
   const hasMedia = groups.some((g) => g.metaMedias?.length);
 
   return (
-    <div className="mx-auto max-w-[640px] px-5 pt-4 lg:pt-6">
+    <div className="mx-auto max-w-5xl px-5 pt-4 lg:pt-6">
       <h1 className="mb-4 font-display text-[28px] font-extrabold tracking-[-0.02em]">
         Médias
       </h1>
@@ -42,7 +42,7 @@ export default async function MediasPage() {
             .map((group) => (
               <section key={group.id}>
                 <SectionHeader title={group.title} sticky />
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
                   {[...group.metaMedias]
                     .sort((a, b) => a.title.localeCompare(b.title, "fr"))
                     .map((media) => (
