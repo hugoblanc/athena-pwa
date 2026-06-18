@@ -1,8 +1,8 @@
 "use client";
 
 import { ThumbsUp } from "lucide-react";
-import { useState, useSyncExternalStore } from "react";
-import { clapIssue } from "@/lib/api/roadmap";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { clapIssue, unclapIssue } from "@/lib/api/roadmap";
 import { cn } from "@/lib/cn";
 
 const STORAGE_KEY = "athena:clapped-issues";
@@ -65,30 +65,44 @@ export function ClapButton({
     () => readClapped().has(issueId),
     () => false, // snapshot serveur : jamais voté avant hydratation
   );
-  const [delta, setDelta] = useState(0);
   const [pending, setPending] = useState(false);
 
-  const value = count + delta;
+  // État « voté » au chargement : `count` (serveur) inclut DÉJÀ le vote de
+  // l'utilisateur s'il avait voté. On calcule donc la valeur affichée
+  // relativement à cet état initial (et pas un simple ±1), sinon le compteur
+  // dérive après un vote→dévote.
+  const [votedInitial, setVotedInitial] = useState<boolean | null>(null);
+  useEffect(() => {
+    setVotedInitial(readClapped().has(issueId));
+  }, [issueId]);
+
+  const baseVoted = votedInitial ?? voted;
+  const value = count + (voted ? 1 : 0) - (baseVoted ? 1 : 0);
+
   const offline =
     typeof navigator !== "undefined" && navigator.onLine === false;
-  const disabled = voted || pending || offline;
+  const disabled = pending || offline;
 
-  async function handleClap() {
+  /** Toggle : un re-clic retire le vote. Optimiste + rollback en cas d'échec. */
+  async function handleToggle() {
     if (disabled) return;
+    const wasVoted = readClapped().has(issueId);
     setPending(true);
-    setDelta(1);
-    const clapped = readClapped();
-    clapped.add(issueId);
-    persistClapped(clapped);
+
+    const next = readClapped();
+    if (wasVoted) next.delete(issueId);
+    else next.add(issueId);
+    persistClapped(next);
     emit();
 
     try {
-      await clapIssue(issueId);
+      if (wasVoted) await unclapIssue(issueId);
+      else await clapIssue(issueId);
     } catch {
       // rollback
-      setDelta(0);
       const rolled = readClapped();
-      rolled.delete(issueId);
+      if (wasVoted) rolled.add(issueId);
+      else rolled.delete(issueId);
       persistClapped(rolled);
       emit();
     } finally {
@@ -99,10 +113,10 @@ export function ClapButton({
   return (
     <button
       type="button"
-      onClick={handleClap}
+      onClick={handleToggle}
       disabled={disabled}
       aria-pressed={voted}
-      aria-label={`Voter pour : ${title} — ${value} vote${value > 1 ? "s" : ""}`}
+      aria-label={`${voted ? "Retirer le vote" : "Voter"} : ${title} — ${value} vote${value > 1 ? "s" : ""}`}
       className={cn(
         "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-semibold transition-[background,border-color,color] duration-150 disabled:cursor-not-allowed",
         voted

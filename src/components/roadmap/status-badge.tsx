@@ -14,9 +14,9 @@ export const STATUS_META: Record<
     dot: "bg-primary",
   },
   planned: {
-    label: "Prévu",
-    pill: "bg-tag-bg text-tag-text",
-    dot: "bg-text-dim",
+    label: "Validé",
+    pill: "bg-[#4f8cf7]/15 text-[#6fa1ff]",
+    dot: "bg-[#4f8cf7]",
   },
   open: {
     label: "Proposé",
@@ -24,19 +24,35 @@ export const STATUS_META: Record<
     dot: "bg-text-faint",
   },
   done: {
-    label: "Livré",
+    label: "Terminé",
     pill: "bg-success/15 text-success",
     dot: "bg-success",
   },
   rejected: {
-    label: "Écarté",
+    label: "Refusé",
     pill: "bg-danger/15 text-danger",
     dot: "bg-danger",
   },
 };
 
-/** Ordre des sections de la roadmap (du plus actif au livré). */
+/**
+ * Ordre des sections dans la vue groupée « Tous » (du plus actif au terminé).
+ * `rejected` est exclu de cette vue (visible via le filtre « Refusé »).
+ */
 export const STATUS_ORDER = ["in_progress", "planned", "open", "done"] as const;
+
+/**
+ * Ordre/labels pour les filtres (inclut « Tous » et « Refusé »).
+ * `value` "" = tous. Aligné sur le vocabulaire produit.
+ */
+export const STATUS_FILTERS: { value: string; label: string }[] = [
+  { value: "", label: "Tous" },
+  { value: "open", label: "Proposé" },
+  { value: "planned", label: "Validé" },
+  { value: "in_progress", label: "En cours" },
+  { value: "done", label: "Terminé" },
+  { value: "rejected", label: "Refusé" },
+];
 
 /** Pastille de statut (libellé + point coloré). */
 export function StatusBadge({

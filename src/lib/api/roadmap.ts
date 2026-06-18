@@ -1,7 +1,8 @@
 import { getAnonKey } from "../anon-key";
+import { authFetch } from "./auth-client";
 import { apiGet } from "./client";
 import { API_BASE_URL, CACHE } from "./config";
-import type { Issue } from "./types";
+import type { IdeaComment, Issue } from "./types";
 
 /**
  * Domaine Roadmap / Idées.
@@ -42,9 +43,41 @@ export async function clapIssue(issueId: number): Promise<Issue> {
   return res.json();
 }
 
+/** Retire le vote d'une idée (toggle). `DELETE /issues/:id/clap`. */
+export async function unclapIssue(issueId: number): Promise<Issue> {
+  const res = await fetch(`${API_BASE_URL}/issues/${issueId}/clap`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json", ...anonHeader() },
+  });
+  if (!res.ok) throw new Error(`Issue unclap: ${res.status}`);
+  return res.json();
+}
+
 /** Liste les idées (RSC). `GET /issues`. */
 export async function listIssues(): Promise<Issue[]> {
   return apiGet<Issue[]>("/issues", CACHE.list);
+}
+
+/** Détail d'une idée. `GET /issues/:id`. */
+export async function getIssue(id: number): Promise<Issue> {
+  return apiGet<Issue>(`/issues/${id}`, CACHE.detail);
+}
+
+/** Commentaires d'une idée (public). `GET /issues/:id/comments`. */
+export async function getComments(id: number): Promise<IdeaComment[]> {
+  return apiGet<IdeaComment[]>(`/issues/${id}/comments`, CACHE.live);
+}
+
+/** Poste un commentaire (connexion requise). `POST /issues/:id/comments`. */
+export async function postComment(
+  id: number,
+  text: string,
+): Promise<IdeaComment> {
+  return authFetch<IdeaComment>(`/issues/${id}/comments`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
 }
 
 /** URL publique du dépôt GitHub (issues open-source). */

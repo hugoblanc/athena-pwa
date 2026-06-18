@@ -6,11 +6,30 @@
     "language": "Language"
   },
   "nav": {
-    "feed": { "label": "Feed", "short": "Feed" },
-    "medias": { "label": "Media", "short": "Media" },
-    "podcasts": { "label": "Podcasts", "short": "Podcasts" },
-    "laws": { "label": "Bills", "short": "Bills" },
-    "qa": { "label": "Ask Athena", "short": "Athena" }
+    "feed": {
+      "label": "Feed",
+      "short": "Feed"
+    },
+    "medias": {
+      "label": "Media",
+      "short": "Media"
+    },
+    "podcasts": {
+      "label": "Podcasts",
+      "short": "Podcasts"
+    },
+    "laws": {
+      "label": "Bills",
+      "short": "Bills"
+    },
+    "qa": {
+      "label": "Ask Athena",
+      "short": "Athena"
+    },
+    "roadmap": {
+      "label": "Roadmap",
+      "short": "Roadmap"
+    }
   },
   "feed": {
     "title": "Feed",

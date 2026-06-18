@@ -189,3 +189,14 @@ export interface Issue {
   created_at?: string;
   updated_at?: string;
 }
+
+/** Commentaire d'une idée (roadmap). */
+export interface IdeaComment {
+  id: number;
+  text: string;
+  createdAt: string;
+  author: {
+    displayName: string | null;
+    photoUrl: string | null;
+  };
+}

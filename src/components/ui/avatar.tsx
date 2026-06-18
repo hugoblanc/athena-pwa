@@ -42,8 +42,15 @@ export function Avatar({
       }}
     >
       {src ? (
+        // referrerPolicy="no-referrer" : sans ça, lh3.googleusercontent.com
+        // renvoie souvent 403/429 quand un Referer est envoyé (photos Google).
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt={name} className="size-full object-cover" />
+        <img
+          src={src}
+          alt={name}
+          referrerPolicy="no-referrer"
+          className="size-full object-cover"
+        />
       ) : (
         initials(name)
       )}

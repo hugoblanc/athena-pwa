@@ -1,8 +1,10 @@
 import { Plus } from "lucide-react";
 import type { Metadata } from "next";
 import { NewIssueDialog } from "@/components/roadmap/new-issue-dialog";
+import { RoadmapFilter } from "@/components/roadmap/roadmap-filter";
 import { RoadmapIntro } from "@/components/roadmap/roadmap-intro";
 import { RoadmapList } from "@/components/roadmap/roadmap-list";
+import { STATUS_FILTERS } from "@/components/roadmap/status-badge";
 import { Button } from "@/components/ui/button";
 import { listIssues } from "@/lib/api/roadmap";
 import type { Issue } from "@/lib/api/types";
@@ -13,15 +15,39 @@ export const metadata: Metadata = {
     "Ce qui est en construction sur Athena. Proposez une amélioration et votez pour orienter les priorités.",
 };
 
-export default async function RoadmapPage() {
+/** Valeurs de statut acceptées dans l'URL (`?statut=`). */
+const VALID_STATUS = new Set(
+  STATUS_FILTERS.map((f) => f.value).filter(Boolean),
+);
+
+export default async function RoadmapPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ statut?: string }>;
+}) {
+  const { statut: rawStatut } = await searchParams;
+  const statut = rawStatut && VALID_STATUS.has(rawStatut) ? rawStatut : "";
+
   // Liste des idées votées (BDD via API Athena). En cas d'échec API : EmptyState d'erreur.
-  let issues: Issue[] = [];
+  let allIssues: Issue[] = [];
   let error = false;
   try {
-    issues = await listIssues();
+    allIssues = await listIssues();
   } catch {
     error = true;
   }
+
+  // Compteurs par statut pour les chips (+ total tous statuts confondus).
+  const counts: Record<string, number> = { __all: allIssues.length };
+  for (const i of allIssues) {
+    const s = i.status ?? "open";
+    counts[s] = (counts[s] ?? 0) + 1;
+  }
+
+  // Filtre actif → liste à plat de ce statut ; sinon vue groupée (rejected masqué).
+  const issues = statut
+    ? allIssues.filter((i) => (i.status ?? "open") === statut)
+    : allIssues;
 
   return (
     <div className="mx-auto max-w-[640px] px-5 pb-24 pt-4 lg:pb-10 lg:pt-6">
@@ -47,10 +73,17 @@ export default async function RoadmapPage() {
 
       <RoadmapIntro />
 
+      {!error && allIssues.length > 0 && (
+        <div className="mt-5">
+          <RoadmapFilter value={statut} counts={counts} />
+        </div>
+      )}
+
       <div className="mt-5">
         <RoadmapList
           issues={issues}
           error={error}
+          grouped={!statut}
           emptyAction={
             <NewIssueDialog
               trigger={

@@ -1,11 +1,11 @@
-import { Home, LayoutGrid, Music, Scale, Sparkles } from "lucide-react";
+import { Hammer, Home, LayoutGrid, Music, Scale, Sparkles } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { QA_ENABLED } from "@/lib/features";
 
 export interface NavEntry {
   href: string;
   /** Clé de traduction sous le namespace `nav` (ex. `nav.feed.label`/`.short`). */
-  key: "feed" | "medias" | "podcasts" | "laws" | "qa";
+  key: "feed" | "medias" | "podcasts" | "laws" | "qa" | "roadmap";
   icon: LucideIcon;
 }
 
@@ -21,4 +21,5 @@ export const NAV_ENTRIES: NavEntry[] = [
   ...(QA_ENABLED
     ? [{ href: "/qa", key: "qa", icon: Sparkles } as NavEntry]
     : []),
+  { href: "/roadmap", key: "roadmap", icon: Hammer },
 ];

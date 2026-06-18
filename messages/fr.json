@@ -6,11 +6,30 @@
     "language": "Langue"
   },
   "nav": {
-    "feed": { "label": "Fil d'actu", "short": "Fil" },
-    "medias": { "label": "Médias", "short": "Médias" },
-    "podcasts": { "label": "Podcasts", "short": "Podcasts" },
-    "laws": { "label": "Propositions de loi", "short": "Lois" },
-    "qa": { "label": "Demander à Athena", "short": "Athena" }
+    "feed": {
+      "label": "Fil d'actu",
+      "short": "Fil"
+    },
+    "medias": {
+      "label": "Médias",
+      "short": "Médias"
+    },
+    "podcasts": {
+      "label": "Podcasts",
+      "short": "Podcasts"
+    },
+    "laws": {
+      "label": "Propositions de loi",
+      "short": "Lois"
+    },
+    "qa": {
+      "label": "Demander à Athena",
+      "short": "Athena"
+    },
+    "roadmap": {
+      "label": "Roadmap",
+      "short": "Roadmap"
+    }
   },
   "feed": {
     "title": "Fil d'actu",
