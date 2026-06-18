@@ -37,6 +37,7 @@
     "sectionSettings": "تنظیمات",
     "sectionAbout": "درباره",
     "notifPrefs": "تنظیمات اعلان‌ها",
+    "readingList": "فهرست خواندنی‌ها",
     "darkTheme": "پوستهٔ تیره",
     "darkThemeToggle": "فعال‌سازی پوستهٔ تیره",
     "roadmap": "نقشهٔ راه",
@@ -47,5 +48,11 @@
     "signOutConfirmTitle": "خارج می‌شوید؟",
     "signOutConfirmBody": "هر زمان می‌توانید دوباره وارد شوید. مرور محتوا بدون حساب کاربری آزاد است.",
     "signOutPending": "در حال خروج…"
+  },
+  "readingList": {
+    "title": "فهرست خواندنی‌ها",
+    "emptyTitle": "هیچ مقاله‌ای ذخیره نشده",
+    "emptyDescription": "روی نشانک یک مقاله ضربه بزنید تا اینجا پیدایش کنید.",
+    "remove": "حذف از فهرست خواندنی‌ها"
   }
 }

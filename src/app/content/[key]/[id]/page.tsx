@@ -2,6 +2,7 @@ import { ExternalLink } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleBody } from "@/components/content/article-body";
+import { BookmarkButton } from "@/components/content/bookmark-button";
 import { ListenButton } from "@/components/content/listen-button";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -178,6 +179,19 @@ export default async function ContentDetailPage({
           variant="button"
           data={{ title: content.title, url: shareUrl }}
           tracking={{ refType: "content", refId: id }}
+        />
+        <BookmarkButton
+          variant="icon"
+          article={{
+            id: content.id,
+            contentId: content.contentId,
+            mediaKey: content.metaMedia?.key ?? key,
+            title: content.title,
+            publishedAt: content.publishedAt,
+            imageUrl: heroImage,
+            mediaTitle: sourceTitle,
+            mediaType: content.contentType,
+          }}
         />
         {originalUrl && (
           <Button
