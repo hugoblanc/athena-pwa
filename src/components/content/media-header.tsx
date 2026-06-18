@@ -2,6 +2,7 @@ import { ExternalLink, FileText, Video } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Tag } from "@/components/ui/tag";
 import { mediaLogoSrc } from "@/lib/media";
+import { countryFlag, countryLabel } from "@/lib/format";
 import type { MetaMedia } from "@/lib/api/types";
 
 /**
@@ -51,6 +52,12 @@ export function MediaHeader({
                 {total} contenu{total > 1 ? "s" : ""}
               </span>
             )}
+            {media.countryCode && (
+              <span className="inline-flex items-center gap-1">
+                {countryFlag(media.countryCode)}{" "}
+                {countryLabel(media.countryCode)}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -80,6 +87,12 @@ export function MediaHeader({
           </a>
         )}
       </div>
+
+      {media.description && (
+        <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-text-dim">
+          {media.description}
+        </p>
+      )}
     </header>
   );
 }

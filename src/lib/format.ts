@@ -53,3 +53,34 @@ export function readingTimeFromWordCount(wordCount: number | null | undefined): 
   const min = Math.max(1, Math.round(wordCount / 200));
   return `${min} min de lecture`;
 }
+
+/**
+ * Drapeau emoji pour un code pays ISO 3166-1 alpha-2 (ex. "FR" → "🇫🇷").
+ * Renvoie `null` si le code est invalide ou absent.
+ */
+export function countryFlag(code: string | null | undefined): string | null {
+  if (!code || code.length !== 2) return null;
+  const upper = code.toUpperCase();
+  // Vérifie que ce sont bien deux lettres A-Z
+  if (!/^[A-Z]{2}$/.test(upper)) return null;
+  return String.fromCodePoint(
+    ...upper.split("").map((c) => 0x1f1e6 + c.charCodeAt(0) - 65),
+  );
+}
+
+/**
+ * Libellé localisé d'un code pays (ex. "FR", locale "fr" → "France").
+ * Renvoie `""` si le code est invalide ou si l'environnement ne supporte pas Intl.DisplayNames.
+ */
+export function countryLabel(
+  code: string | null | undefined,
+  locale = "fr",
+): string {
+  if (!code || code.length !== 2) return "";
+  try {
+    const dn = new Intl.DisplayNames([locale], { type: "region" });
+    return dn.of(code.toUpperCase()) ?? "";
+  } catch {
+    return "";
+  }
+}

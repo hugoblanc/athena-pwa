@@ -2,6 +2,7 @@ import { Video, FileText } from "lucide-react";
 import Link from "next/link";
 import { Avatar } from "@/components/ui/avatar";
 import { mediaLogoSrc } from "@/lib/media";
+import { countryFlag } from "@/lib/format";
 import type { MetaMedia } from "@/lib/api/types";
 
 /** Carte média (annuaire des médias libres). */
@@ -24,6 +25,12 @@ export function MediaCard({ media }: { media: MetaMedia }) {
             <FileText className="size-3.5" />
           )}
           {isVideo ? "Vidéos" : "Articles"}
+          {media.countryCode && (
+            <>
+              <span className="text-text-faint">·</span>
+              <span aria-label={media.countryCode}>{countryFlag(media.countryCode)}</span>
+            </>
+          )}
         </div>
       </div>
     </Link>
