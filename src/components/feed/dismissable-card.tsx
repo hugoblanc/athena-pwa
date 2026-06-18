@@ -38,11 +38,14 @@ export function DismissableCard({
   const [dismissing, setDismissing] = useState(false);
 
   function handlePointerDown(e: PointerEvent<HTMLDivElement>) {
+    // Desktop (souris) : pas de slide — on garde le bouton × au survol.
+    if (e.pointerType === "mouse") return;
     startX.current = e.clientX;
     startY.current = e.clientY;
   }
 
   function handlePointerMove(e: PointerEvent<HTMLDivElement>) {
+    if (e.pointerType === "mouse") return;
     const dx = e.clientX - startX.current;
     const dy = e.clientY - startY.current;
 
