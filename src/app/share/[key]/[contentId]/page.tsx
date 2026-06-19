@@ -105,7 +105,7 @@ export default async function SharePage({ params }: ShareParams) {
         source={data.mediaTitle}
       />
       {/* Opt-in notif après ~12 s de lecture (non bloquant). */}
-      <NotifyOptInSheet mediaTitle={data.mediaTitle} />
+      <NotifyOptInSheet mediaTitle={data.mediaTitle} mediaKey={key} />
     </div>
   );
 }

@@ -5,7 +5,11 @@ import { BellRing, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button, IconButton } from "@/components/ui/button";
-import { isPushSupported, subscribeToPush } from "@/lib/api/push";
+import {
+  enableAndFollow,
+  isPushSupported,
+  subscribeToPush,
+} from "@/lib/api/push";
 import { cn } from "@/lib/cn";
 import { isIOS, isStandalone } from "@/lib/pwa";
 
@@ -61,9 +65,16 @@ type Phase = "intro" | "ios-install" | "done";
  * - Android / desktop : demande la permission + abonne (web push anonyme).
  * - iOS non installé : explique qu'il faut ajouter Athena à l'écran d'accueil.
  *
- * `mediaTitle` (optionnel) personnalise l'accroche avec le média lu.
+ * `mediaTitle`/`mediaKey` (optionnels) personnalisent l'accroche et abonnent au
+ * média lu (ciblage des notifs).
  */
-export function NotifyOptInSheet({ mediaTitle }: { mediaTitle?: string }) {
+export function NotifyOptInSheet({
+  mediaTitle,
+  mediaKey,
+}: {
+  mediaTitle?: string;
+  mediaKey?: string;
+}) {
   const [open, setOpen] = useState(false);
   const [phase, setPhase] = useState<Phase>("intro");
   const [pending, setPending] = useState(false);
@@ -86,7 +97,9 @@ export function NotifyOptInSheet({ mediaTitle }: { mediaTitle?: string }) {
   async function handleEnable() {
     setPending(true);
     try {
-      await subscribeToPush(); // déclenche la demande de permission (geste user)
+      // déclenche la demande de permission (geste user) + suit le média lu si connu
+      if (mediaKey) await enableAndFollow(mediaKey);
+      else await subscribeToPush();
       setPhase("done");
     } catch {
       // refus de permission ou échec : on n'insiste pas, on re-proposera plus tard.

@@ -1,4 +1,5 @@
 import { ExternalLink, FileText, Video } from "lucide-react";
+import { FollowMediaButton } from "@/components/notif/follow-media-button";
 import { Avatar } from "@/components/ui/avatar";
 import { Tag } from "@/components/ui/tag";
 import { mediaLogoSrc } from "@/lib/media";
@@ -63,6 +64,11 @@ export function MediaHeader({
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
+        <FollowMediaButton
+          mediaKey={media.key}
+          mediaTitle={media.title}
+          className="h-9"
+        />
         {showDonation && (
           <a
             href={media.donation}

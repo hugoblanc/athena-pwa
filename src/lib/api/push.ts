@@ -84,3 +84,57 @@ export async function currentPushSubscription(): Promise<PushSubscription | null
   const reg = await navigator.serviceWorker.ready;
   return reg.pushManager.getSubscription();
 }
+
+// ───────────────────────── Suivi par média (ciblage notifs) ─────────────────
+// Miroir local des médias suivis : état UI instantané + offline-safe. La source
+// de vérité reste le serveur (table push_follow), synchronisée à chaque action.
+const FOLLOWS_KEY = "athena.notif.follows";
+
+export function getFollowedKeys(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = window.localStorage.getItem(FOLLOWS_KEY);
+    return new Set<string>(raw ? JSON.parse(raw) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function persistFollowed(keys: Set<string>) {
+  try {
+    window.localStorage.setItem(FOLLOWS_KEY, JSON.stringify([...keys]));
+  } catch {
+    /* quota / mode privé : l'état serveur fait foi */
+  }
+}
+
+/** Suivre un média (requiert un abonnement push déjà créé). */
+export async function followMedia(mediaKey: string): Promise<void> {
+  const sub = await currentPushSubscription();
+  if (!sub) throw new Error("Pas d'abonnement push");
+  await pushPost("/push/follow", { endpoint: sub.endpoint, mediaKey });
+  const next = getFollowedKeys();
+  next.add(mediaKey);
+  persistFollowed(next);
+}
+
+/** Ne plus suivre un média. */
+export async function unfollowMedia(mediaKey: string): Promise<void> {
+  const sub = await currentPushSubscription();
+  if (sub) {
+    await pushPost("/push/unfollow", { endpoint: sub.endpoint, mediaKey });
+  }
+  const next = getFollowedKeys();
+  next.delete(mediaKey);
+  persistFollowed(next);
+}
+
+/**
+ * Active les notifs si besoin (permission + abonnement) PUIS suit le média.
+ * Utilisé par l'opt-in et le bouton « Suivre ». Lève si la permission est
+ * refusée ou le push indisponible.
+ */
+export async function enableAndFollow(mediaKey: string): Promise<void> {
+  await subscribeToPush();
+  await followMedia(mediaKey);
+}

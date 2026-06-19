@@ -218,7 +218,7 @@ export default async function ContentDetailPage({
       )}
 
       {/* Opt-in notif après ~12 s de lecture (non bloquant). */}
-      <NotifyOptInSheet mediaTitle={sourceTitle} />
+      <NotifyOptInSheet mediaTitle={sourceTitle} mediaKey={content.metaMedia?.key ?? key} />
     </article>
   );
 }
