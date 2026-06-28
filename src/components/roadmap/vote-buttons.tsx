@@ -106,8 +106,10 @@ export function VoteButtons({
     const from = vote;
     if (from === to) return;
 
-    // Le downvote exige un compte : on redirige vers la connexion.
-    if (to === -1 && !user) {
+    // Le downvote exige un compte, à la POSE comme au RETRAIT (removeDownvote
+    // passe par authFetch). Sans session valide, on redirige vers la connexion
+    // plutôt que de laisser le 401 provoquer un rollback silencieux.
+    if ((to === -1 || from === -1) && !user) {
       router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
       return;
     }

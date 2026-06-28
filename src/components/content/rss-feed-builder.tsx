@@ -11,7 +11,38 @@ import type { ListMetaMedia } from "@/lib/api/types";
 /** Construit l'URL du flux RSS : aucun média = tous, sinon param `medias`. */
 function buildRssUrl(selected: string[]): string {
   const base = `${API_BASE_URL}/content/rss`;
-  return selected.length ? `${base}?medias=${selected.join(",")}` : base;
+  if (!selected.length) return base;
+  return `${base}?medias=${selected.map(encodeURIComponent).join(",")}`;
+}
+
+/**
+ * Copie dans le presse-papiers avec repli : API Clipboard moderne (contexte
+ * sécurisé) puis `execCommand("copy")` sur un textarea temporaire (Safari iOS,
+ * contextes non sécurisés). Renvoie `false` si tout échoue.
+ */
+async function writeToClipboard(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    /* on tente le repli execCommand ci-dessous */
+  }
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -21,24 +52,28 @@ function buildRssUrl(selected: string[]): string {
  */
 export function RssFeedBuilder({ groups }: { groups: ListMetaMedia[] }) {
   const [selected, setSelected] = useState<string[]>([]);
-  const [copied, setCopied] = useState(false);
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "error">(
+    "idle",
+  );
 
   const url = buildRssUrl(selected);
 
   function toggle(key: string) {
-    setCopied(false);
+    setCopyState("idle");
     setSelected((s) =>
       s.includes(key) ? s.filter((k) => k !== key) : [...s, key],
     );
   }
 
   async function copy() {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      /* clipboard indisponible : l'URL reste sélectionnable manuellement */
+    if (await writeToClipboard(url)) {
+      setCopyState("copied");
+      window.setTimeout(
+        () => setCopyState((s) => (s === "copied" ? "idle" : s)),
+        2000,
+      );
+    } else {
+      setCopyState("error");
     }
   }
 
@@ -77,7 +112,7 @@ export function RssFeedBuilder({ groups }: { groups: ListMetaMedia[] }) {
             {url}
           </code>
           <Button size="sm" onClick={copy} className="shrink-0">
-            {copied ? (
+            {copyState === "copied" ? (
               <>
                 <Check aria-hidden />
                 Copié
@@ -90,6 +125,11 @@ export function RssFeedBuilder({ groups }: { groups: ListMetaMedia[] }) {
             )}
           </Button>
         </div>
+        {copyState === "error" && (
+          <p role="alert" className="mt-2 text-[13px] text-danger">
+            {"Copie automatique impossible — sélectionnez l'URL ci-dessus pour la copier manuellement."}
+          </p>
+        )}
       </div>
 
       <h2 className="mb-3 text-[13px] font-bold uppercase tracking-[0.06em] text-text-dim">
