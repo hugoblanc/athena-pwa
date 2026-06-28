@@ -4,6 +4,13 @@ import { NewIssueDialog } from "@/components/roadmap/new-issue-dialog";
 import { RoadmapFilter } from "@/components/roadmap/roadmap-filter";
 import { RoadmapIntro } from "@/components/roadmap/roadmap-intro";
 import { RoadmapList } from "@/components/roadmap/roadmap-list";
+import {
+  DEFAULT_TYPE,
+  TYPE_COPY,
+  TYPE_FILTERS,
+  VALID_TYPE,
+} from "@/components/roadmap/roadmap-meta";
+import { RoadmapTypeFilter } from "@/components/roadmap/roadmap-type-filter";
 import { STATUS_FILTERS } from "@/components/roadmap/status-badge";
 import { Button } from "@/components/ui/button";
 import { listIssues } from "@/lib/api/roadmap";
@@ -23,9 +30,12 @@ const VALID_STATUS = new Set(
 export default async function RoadmapPage({
   searchParams,
 }: {
-  searchParams: Promise<{ statut?: string }>;
+  searchParams: Promise<{ statut?: string; type?: string }>;
 }) {
-  const { statut: rawStatut } = await searchParams;
+  const { statut: rawStatut, type: rawType } = await searchParams;
+  // Deux dimensions dans l'URL : `type` (Idées/Médias/Bugs, défaut feature) et
+  // `statut` (filtre secondaire au sein du type).
+  const type = rawType && VALID_TYPE.has(rawType) ? rawType : DEFAULT_TYPE;
   const statut = rawStatut && VALID_STATUS.has(rawStatut) ? rawStatut : "";
 
   // Liste des idées votées (BDD via API Athena). En cas d'échec API : EmptyState d'erreur.
@@ -37,17 +47,27 @@ export default async function RoadmapPage({
     error = true;
   }
 
-  // Compteurs par statut pour les chips (+ total tous statuts confondus).
-  const counts: Record<string, number> = { __all: allIssues.length };
+  // Compteurs par type pour les chips principales.
+  const typeCounts: Record<string, number> = {};
   for (const i of allIssues) {
-    const s = i.status ?? "open";
-    counts[s] = (counts[s] ?? 0) + 1;
+    const t = i.type ?? DEFAULT_TYPE;
+    typeCounts[t] = (typeCounts[t] ?? 0) + 1;
   }
 
-  // Filtre actif → liste à plat de ce statut ; sinon vue groupée (rejected masqué).
+  // Sous-ensemble du type actif, puis compteurs par statut sur ce sous-ensemble.
+  const typed = allIssues.filter((i) => (i.type ?? DEFAULT_TYPE) === type);
+  const statusCounts: Record<string, number> = { __all: typed.length };
+  for (const i of typed) {
+    const s = i.status ?? "open";
+    statusCounts[s] = (statusCounts[s] ?? 0) + 1;
+  }
+
+  // Statut filtré → liste à plat ; sinon vue groupée (rejected masqué).
   const issues = statut
-    ? allIssues.filter((i) => (i.status ?? "open") === statut)
-    : allIssues;
+    ? typed.filter((i) => (i.status ?? "open") === statut)
+    : typed;
+
+  const copy = TYPE_COPY[type] ?? TYPE_COPY[DEFAULT_TYPE];
 
   return (
     <div className="mx-auto max-w-[640px] px-5 pb-24 pt-4 lg:pb-10 lg:pt-6">
@@ -61,10 +81,11 @@ export default async function RoadmapPage({
         {/* Desktop : bouton inline dans l'en-tête. */}
         <div className="hidden lg:block">
           <NewIssueDialog
+            type={type}
             trigger={
               <Button variant="primary">
                 <Plus aria-hidden />
-                Proposer une amélioration
+                {copy.cta}
               </Button>
             }
           />
@@ -74,8 +95,13 @@ export default async function RoadmapPage({
       <RoadmapIntro />
 
       {!error && allIssues.length > 0 && (
-        <div className="mt-5">
-          <RoadmapFilter value={statut} counts={counts} />
+        <div className="mt-5 flex flex-col gap-3">
+          {/* Dimension principale : type (Idées / Médias / Bugs). */}
+          <RoadmapTypeFilter value={type} counts={typeCounts} />
+          {/* Dimension secondaire : statut, au sein du type. */}
+          {typed.length > 0 && (
+            <RoadmapFilter value={statut} type={type} counts={statusCounts} />
+          )}
         </div>
       )}
 
@@ -84,12 +110,15 @@ export default async function RoadmapPage({
           issues={issues}
           error={error}
           grouped={!statut}
+          emptyTitle={copy.emptyTitle}
+          emptyDescription={copy.emptyDescription}
           emptyAction={
             <NewIssueDialog
+              type={type}
               trigger={
                 <Button variant="primary">
                   <Plus aria-hidden />
-                  Proposer une amélioration
+                  {copy.cta}
                 </Button>
               }
             />
@@ -100,10 +129,11 @@ export default async function RoadmapPage({
       {/* Mobile : FAB flottant (décalé au-dessus de la tab bar + player). */}
       <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+84px)] right-5 z-30 lg:hidden">
         <NewIssueDialog
+          type={type}
           trigger={
             <Button
               variant="primary"
-              aria-label="Proposer une amélioration"
+              aria-label={copy.cta}
               className="size-14 rounded-full p-0 shadow-elev-1 [&_svg]:size-6"
             >
               <Plus aria-hidden />

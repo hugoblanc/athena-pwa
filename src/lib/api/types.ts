@@ -177,7 +177,7 @@ export interface Issue {
   number?: number;
   title: string;
   body?: string;
-  /** "feature" | "bug" */
+  /** "feature" | "media" | "bug" */
   type?: string;
   /** "open" | "planned" | "in_progress" | "done" | "rejected" */
   status?: string;

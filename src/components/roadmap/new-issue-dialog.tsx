@@ -8,6 +8,7 @@ import { Button, IconButton } from "@/components/ui/button";
 import { TextField } from "@/components/ui/text-field";
 import { createIssue } from "@/lib/api/roadmap";
 import { cn } from "@/lib/cn";
+import { TYPE_COPY } from "./roadmap-meta";
 
 const TITLE_MAX = 120;
 const BODY_MAX = 1500;
@@ -22,11 +23,15 @@ const textareaClass =
  */
 export function NewIssueDialog({
   trigger,
+  type = "feature",
 }: {
   /** Élément déclencheur (bouton header desktop ou FAB mobile). */
   trigger: React.ReactElement;
+  /** Type créé (feature | media | bug) ; pilote le wording et le `type` envoyé. */
+  type?: string;
 }) {
   const router = useRouter();
+  const copy = TYPE_COPY[type] ?? TYPE_COPY.feature;
   const titleId = useId();
   const bodyId = useId();
 
@@ -58,6 +63,7 @@ export function NewIssueDialog({
       await createIssue({
         title: trimmed,
         body: body.trim() || undefined,
+        type,
       });
       setDone(true);
       router.refresh();
@@ -93,7 +99,7 @@ export function NewIssueDialog({
         >
           <div className="flex items-start justify-between gap-3">
             <Dialog.Title className="font-display text-[19px] font-extrabold tracking-[-0.01em]">
-              Proposer une amélioration
+              {copy.dialogTitle}
             </Dialog.Title>
             <Dialog.Close
               render={
@@ -115,15 +121,14 @@ export function NewIssueDialog({
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <Dialog.Description className="text-sm text-text-dim">
-                Athena est open-source. Décrivez l&apos;idée ou le problème, la
-                communauté pourra voter pour l&apos;orienter.
+                {copy.dialogDescription}
               </Dialog.Description>
 
               <div className="flex flex-col gap-1.5">
                 <TextField
                   id={titleId}
                   label="Titre"
-                  placeholder="Ex. Ajouter un mode hors-ligne"
+                  placeholder={copy.titlePlaceholder}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   maxLength={TITLE_MAX}
@@ -145,7 +150,7 @@ export function NewIssueDialog({
                 <textarea
                   id={bodyId}
                   className={textareaClass}
-                  placeholder="Contexte, cas d'usage, comportement attendu…"
+                  placeholder={copy.bodyPlaceholder}
                   value={body}
                   onChange={(e) => setBody(e.target.value)}
                   maxLength={BODY_MAX}

@@ -18,12 +18,17 @@ export function RoadmapList({
   error,
   grouped = true,
   emptyAction,
+  emptyTitle = "Aucune demande pour l'instant",
+  emptyDescription = "Soyez le premier à proposer une amélioration. Les idées les plus votées orientent les priorités.",
 }: {
   issues: Issue[];
   error?: boolean;
   grouped?: boolean;
   /** Action affichée dans l'état vide (déclencheur de la modale). */
   emptyAction?: ReactNode;
+  /** Titre/description de l'état vide, contextualisés par type. */
+  emptyTitle?: string;
+  emptyDescription?: string;
 }) {
   if (error) {
     return (
@@ -39,8 +44,8 @@ export function RoadmapList({
     return (
       <EmptyState
         icon={Hammer}
-        title="Aucune demande pour l'instant"
-        description="Soyez le premier à proposer une amélioration. Les idées les plus votées orientent les priorités."
+        title={emptyTitle}
+        description={emptyDescription}
         action={emptyAction}
       />
     );

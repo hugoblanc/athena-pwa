@@ -7,13 +7,16 @@ import { STATUS_FILTERS } from "./status-badge";
 /**
  * Filtres de la roadmap par statut. État porté par l'URL (`?statut=`),
  * `router.replace(scroll:false)` → re-render du Server Component avec la liste
- * filtrée. `counts` (optionnel) ajoute le nombre par statut dans les chips.
+ * filtrée. `type` (dimension parente) est préservé dans l'URL. `counts`
+ * (optionnel) ajoute le nombre par statut dans les chips.
  */
 export function RoadmapFilter({
   value,
+  type,
   counts,
 }: {
   value: string;
+  type: string;
   counts?: Record<string, number>;
 }) {
   const router = useRouter();
@@ -28,9 +31,9 @@ export function RoadmapFilter({
   });
 
   function onChange(next: string) {
-    router.replace(next ? `${pathname}?statut=${next}` : pathname, {
-      scroll: false,
-    });
+    const params = new URLSearchParams({ type });
+    if (next) params.set("statut", next);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }
 
   // flex-wrap : les chips passent à la ligne au lieu de défiler horizontalement

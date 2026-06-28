@@ -19,10 +19,11 @@ function anonHeader(): Record<string, string> {
   return key ? { "X-Anon-Key": key } : {};
 }
 
-/** Crée une idée. `POST /issues` (public). */
+/** Crée une idée. `POST /issues` (public). `type` ∈ feature | media | bug (défaut serveur : feature). */
 export async function createIssue(input: {
   title: string;
   body?: string;
+  type?: string;
 }): Promise<Issue> {
   const res = await fetch(`${API_BASE_URL}/issues`, {
     method: "POST",
