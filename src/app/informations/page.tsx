@@ -74,6 +74,12 @@ export default function InformationsPage() {
           <ReplayTutorialButton />
         </div>
 
+        <h2>Nous contacter</h2>
+        <p>
+          Une question, un bug ou une demande d&apos;ajout de média ? Voir la
+          page <Link href="/contact">contact</Link>.
+        </p>
+
         <h2>Confidentialité</h2>
         <p>
           Consultez notre{" "}
