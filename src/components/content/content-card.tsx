@@ -3,6 +3,7 @@
 import { Clock, Play } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Thumbnail } from "@/components/content/thumbnail";
 import { Tag } from "@/components/ui/tag";
 import { cn } from "@/lib/cn";
 import { useReadArticles } from "@/lib/use-read-articles";
@@ -46,8 +47,7 @@ export function ContentCard({
       >
         <div className="relative size-[88px] shrink-0 overflow-hidden rounded-[var(--radius-sm)] bg-gradient-to-br from-surface-2 to-border">
           {data.image && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={data.image} alt="" className="size-full object-cover" />
+            <Thumbnail src={data.image} className="size-full object-cover" />
           )}
           {data.isVideo && (
             <span className="absolute inset-0 grid place-items-center bg-black/30 text-white">
@@ -119,8 +119,7 @@ export function HeroCard({
       >
         <div className="relative h-[184px] bg-gradient-to-br from-brand-500/85 to-brand-600/55 lg:h-[340px]">
           {data.image && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={data.image} alt="" className="size-full object-cover" />
+            <Thumbnail src={data.image} hiRes className="size-full object-cover" />
           )}
           <span className="absolute bottom-3 left-3 rounded-[7px] bg-black/55 px-2.5 py-[5px] text-[11px] font-bold uppercase tracking-[0.05em] text-white backdrop-blur-sm">
             {data.source}
