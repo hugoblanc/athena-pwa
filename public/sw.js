@@ -71,6 +71,8 @@ self.addEventListener("push", (event) => {
     body: data.body || "",
     icon: data.icon || "/icons/icon-192.png",
     badge: "/icons/icon-192.png",
+    // Grande image (vignette du contenu) si fournie — rendu plus riche.
+    ...(data.image ? { image: data.image } : {}),
     data: { url: deepLink(data) },
     tag: data.tag,
   };
