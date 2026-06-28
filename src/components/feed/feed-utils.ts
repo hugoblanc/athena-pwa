@@ -35,6 +35,27 @@ export function mediaKeysForType(
   return keys.length ? keys : undefined;
 }
 
+/**
+ * Combine le filtre de type (onglets) et le filtre par sources (sélection
+ * média) en un seul jeu de `mediaKeys` pour l'API — un seul système, pas deux.
+ *  - `all` + aucune sélection → `undefined` (pas de filtre) ;
+ *  - type seul → les clés de ce type ;
+ *  - sélection seule → la sélection ;
+ *  - les deux → intersection (peut être `[]` : contradiction → aucun résultat).
+ */
+export function combinedMediaKeys(
+  type: FeedType,
+  selected: string[],
+  groups: ListMetaMedia[],
+): string[] | undefined {
+  const typeKeys = mediaKeysForType(type, groups);
+  const sel = selected.length ? selected : undefined;
+  if (!typeKeys) return sel;
+  if (!sel) return typeKeys;
+  const wanted = new Set(sel);
+  return typeKeys.filter((k) => wanted.has(k));
+}
+
 /** Libellé de type pour le tag des cartes. */
 function typeLabel(type: ContentLite["metaMedia"]["type"]): string {
   return type === "YOUTUBE" ? "Vidéo" : "Article";

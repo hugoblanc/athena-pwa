@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArticleBody } from "@/components/content/article-body";
 import { BookmarkButton } from "@/components/content/bookmark-button";
 import { ListenButton } from "@/components/content/listen-button";
+import { ReadingProgressBar } from "@/components/content/reading-progress-bar";
 import { NotifyOptInSheet } from "@/components/notif/notify-opt-in-sheet";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -106,6 +107,8 @@ export default async function ContentDetailPage({
 
   return (
     <article className="mx-auto max-w-[640px] px-5 pt-4 pb-16 lg:pt-6">
+      <ReadingProgressBar />
+
       {/* En-tête éditorial */}
       <header className="mb-5">
         <Tag orange>{kicker}</Tag>

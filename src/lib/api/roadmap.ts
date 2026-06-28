@@ -54,6 +54,25 @@ export async function unclapIssue(issueId: number): Promise<Issue> {
   return res.json();
 }
 
+/**
+ * Vote « contre » une idée (-1). `POST /issues/:id/downvote`.
+ * AUTH FIREBASE requise (Bearer via authFetch) — contrairement au clap anonyme.
+ * Renvoie l'idée avec `voteCount` (net) à jour.
+ */
+export async function downvoteIssue(issueId: number): Promise<Issue> {
+  return authFetch<Issue>(`/issues/${issueId}/downvote`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+/** Retire le vote contre (toggle). `DELETE /issues/:id/downvote` (auth requise). */
+export async function removeDownvote(issueId: number): Promise<Issue> {
+  return authFetch<Issue>(`/issues/${issueId}/downvote`, {
+    method: "DELETE",
+  });
+}
+
 /** Liste les idées (RSC). `GET /issues`. */
 export async function listIssues(): Promise<Issue[]> {
   return apiGet<Issue[]>("/issues", CACHE.list);

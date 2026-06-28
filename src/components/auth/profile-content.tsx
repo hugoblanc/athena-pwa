@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Bookmark, FileText, Info, Map, ShieldCheck } from "lucide-react";
+import { Bell, Bookmark, FileText, Info, Map, Rss, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -100,6 +100,7 @@ export function ProfileContent() {
           label={t("readingList")}
           href="/reading-list"
         />
+        <SettingsLinkRow icon={Rss} label={t("rssFeed")} href="/profile/rss" />
         <ThemeToggleRow />
         <EcoModeRow />
         <LocaleSwitcherRow label={tc("language")} />

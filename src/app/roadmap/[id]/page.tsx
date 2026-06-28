@@ -2,7 +2,7 @@ import { ArrowLeft, ThumbsUp } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ClapButton } from "@/components/roadmap/clap-button";
+import { VoteButtons } from "@/components/roadmap/vote-buttons";
 import { CommentSection } from "@/components/roadmap/comment-section";
 import { StatusBadge } from "@/components/roadmap/status-badge";
 import { ApiError } from "@/lib/api/client";
@@ -55,7 +55,7 @@ export default async function RoadmapIssuePage({
     comments = [];
   }
 
-  const votes = issue.claps ?? 0;
+  const votes = issue.voteCount ?? issue.claps ?? 0;
   const votable = !NON_VOTABLE.has(issue.status ?? "open");
 
   return (
@@ -77,7 +77,7 @@ export default async function RoadmapIssuePage({
         </div>
 
         {votable ? (
-          <ClapButton issueId={ideaId} count={votes} title={issue.title} />
+          <VoteButtons issueId={ideaId} count={votes} title={issue.title} />
         ) : (
           <span
             className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-[13px] font-semibold text-text-faint"

@@ -4,7 +4,7 @@
  * Clé : "athena:reading-list"
  * Cap : 200 entrées (FIFO sur savedAt).
  *
- * Pattern identique à clap-button.tsx : store externe minimal pour
+ * Pattern identique à feed-prefs.ts : store externe minimal pour
  * useSyncExternalStore côté client, window.storage pour la synchro multi-onglets.
  */
 

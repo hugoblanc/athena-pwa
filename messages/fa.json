@@ -52,7 +52,10 @@
     "dismissed": "مقاله پنهان شد",
     "undoDismiss": "لغو",
     "dismissAriaLabel": "پنهان کردن این مقاله",
-    "emptyDescDismissed": "همه مقاله‌ها را پنهان کردید. بعداً برای محتوای جدید برگردید."
+    "emptyDescDismissed": "همه مقاله‌ها را پنهان کردید. بعداً برای محتوای جدید برگردید.",
+    "mediaFilter": {
+      "open": "فیلتر بر اساس رسانه"
+    }
   },
   "profile": {
     "title": "نمایه",
@@ -61,6 +64,7 @@
     "sectionAbout": "درباره",
     "notifPrefs": "تنظیمات اعلان‌ها",
     "readingList": "فهرست خواندنی‌ها",
+    "rssFeed": "خوراک RSS من",
     "darkTheme": "پوستهٔ تیره",
     "darkThemeToggle": "فعال‌سازی پوستهٔ تیره",
     "ecoMode": "حالت صرفه‌جویی · بدون تصویر",

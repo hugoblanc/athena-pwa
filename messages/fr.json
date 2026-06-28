@@ -51,7 +51,10 @@
     "dismissed": "Article masqué",
     "undoDismiss": "Annuler",
     "dismissAriaLabel": "Masquer cet article",
-    "emptyDescDismissed": "Vous avez masqué tous les articles. Revenez plus tard pour de nouveaux contenus."
+    "emptyDescDismissed": "Vous avez masqué tous les articles. Revenez plus tard pour de nouveaux contenus.",
+    "mediaFilter": {
+      "open": "Filtrer par média"
+    }
   },
   "profile": {
     "title": "Profil",
@@ -60,6 +63,7 @@
     "sectionAbout": "À propos",
     "notifPrefs": "Préférences de notification",
     "readingList": "Liste de lecture",
+    "rssFeed": "Mon flux RSS",
     "darkTheme": "Thème sombre",
     "darkThemeToggle": "Activer le thème sombre",
     "ecoMode": "Mode économie · sans images",

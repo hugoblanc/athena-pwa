@@ -1,6 +1,6 @@
 "use client";
 
-import { EyeOff, SearchX } from "lucide-react";
+import { EyeOff, SlidersHorizontal, SearchX } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -16,18 +16,28 @@ import { SearchField } from "@/components/ui/search-field";
 import { getLastContent } from "@/lib/api/content";
 import type { UnifiedPage } from "@/lib/api/pagination";
 import type { ContentLite, ListMetaMedia } from "@/lib/api/types";
+import { cn } from "@/lib/cn";
 import { useDismissedFeed } from "@/lib/dismissed-feed";
+import { useFeedMediaFilter } from "@/lib/feed-media-filter";
 import { useFeedPrefs } from "@/lib/feed-prefs";
 import type { SavedArticle } from "@/lib/reading-list";
 import {
+  combinedMediaKeys,
   FEED_TYPES,
   type FeedType,
-  mediaKeysForType,
   toCardData,
   toHeroData,
 } from "./feed-utils";
 import { DismissableCard } from "./dismissable-card";
 import { FeedSkeleton } from "./feed-skeleton";
+import { MediaFilterSheet } from "./media-filter-sheet";
+
+/** Page vide (utilisée quand le croisement type × médias est contradictoire). */
+const EMPTY_PAGE: UnifiedPage<ContentLite> = {
+  items: [],
+  page: 1,
+  hasNext: false,
+};
 
 const PAGE_SIZE = 10;
 
@@ -53,6 +63,11 @@ export function FeedClient({
   );
   const ecoMode = prefs.ecoMode;
 
+  // Filtre par sources (médias) — persisté en localStorage, additif au type.
+  const { selected: selectedMedia, setAll: setSelectedMedia } =
+    useFeedMediaFilter();
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+
   const [items, setItems] = useState<ContentLite[]>(initialPage.items);
   const [page, setPage] = useState(initialPage.page);
   const [hasNext, setHasNext] = useState(initialPage.hasNext);
@@ -73,18 +88,22 @@ export function FeedClient({
   const firstRender = useRef(true);
 
   const fetchPage = useCallback(
-    async (targetPage: number, t: string, ty: FeedType) => {
+    async (targetPage: number, t: string, ty: FeedType, media: string[]) => {
+      const keys = combinedMediaKeys(ty, media, medias);
+      // Croisement contradictoire (ex. « Vidéos » + uniquement des médias
+      // articles) → aucun résultat, sans appel réseau inutile.
+      if (keys && keys.length === 0) return EMPTY_PAGE;
       return getLastContent({
         page: targetPage,
         size: PAGE_SIZE,
         terms: t || undefined,
-        mediaKeys: mediaKeysForType(ty, medias),
+        mediaKeys: keys,
       });
     },
     [medias],
   );
 
-  // Re-fetch page 1 quand terms/type changent (hors 1er rendu = page SSR).
+  // Re-fetch page 1 quand terms/type/sélection changent (hors 1er rendu = page SSR).
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;
@@ -93,7 +112,7 @@ export function FeedClient({
     let cancelled = false;
     setRefetching(true);
     setError(null);
-    fetchPage(1, terms, type)
+    fetchPage(1, terms, type, selectedMedia)
       .then((res) => {
         if (cancelled) return;
         setItems(res.items);
@@ -109,7 +128,7 @@ export function FeedClient({
     return () => {
       cancelled = true;
     };
-  }, [terms, type, retryKey, fetchPage]);
+  }, [terms, type, selectedMedia, retryKey, fetchPage]);
 
   // Synchronise l'URL (partage / retour navigateur) sans recharger la page.
   useEffect(() => {
@@ -125,7 +144,7 @@ export function FeedClient({
     setLoadingMore(true);
     setError(null);
     try {
-      const res = await fetchPage(page + 1, terms, type);
+      const res = await fetchPage(page + 1, terms, type, selectedMedia);
       setItems((prev) => [...prev, ...res.items]);
       setPage(res.page);
       setHasNext(res.hasNext);
@@ -134,12 +153,13 @@ export function FeedClient({
     } finally {
       setLoadingMore(false);
     }
-  }, [loadingMore, hasNext, fetchPage, page, terms, type]);
+  }, [loadingMore, hasNext, fetchPage, page, terms, type, selectedMedia]);
 
   function resetFilters() {
     setTerms("");
     setType("all");
     persistType("all");
+    setSelectedMedia([]);
   }
 
   function handleDismiss(contentId: string) {
@@ -165,7 +185,7 @@ export function FeedClient({
   const [hero, ...rest] = visibleItems;
   const isEmpty = visibleItems.length === 0;
   const allDismissed = items.length > 0 && visibleItems.length === 0 && !hasNext;
-  const filtered = Boolean(terms) || type !== "all";
+  const filtered = Boolean(terms) || type !== "all" || selectedMedia.length > 0;
 
   /** Construit le SavedArticle minimal depuis un ContentLite (pas de backend). */
   function toSavedArticle(c: ContentLite): Omit<SavedArticle, "savedAt"> {
@@ -190,15 +210,43 @@ export function FeedClient({
         onSearch={setTerms}
         className="mb-3"
       />
-      <FilterChips
-        options={FEED_TYPES.map((v) => ({ value: v, label: t(`chips.${v}`) }))}
-        value={type}
-        onChange={(v) => {
-          const next = v as FeedType;
-          setType(next);
-          persistType(next);
-        }}
-        className="mb-[18px]"
+      <div className="mb-[18px] flex items-center gap-2">
+        <FilterChips
+          options={FEED_TYPES.map((v) => ({ value: v, label: t(`chips.${v}`) }))}
+          value={type}
+          onChange={(v) => {
+            const next = v as FeedType;
+            setType(next);
+            persistType(next);
+          }}
+          className="min-w-0 flex-1"
+        />
+        <button
+          type="button"
+          onClick={() => setFilterSheetOpen(true)}
+          aria-label={t("mediaFilter.open")}
+          className={cn(
+            "relative grid size-9 shrink-0 place-items-center rounded-full border transition-colors",
+            selectedMedia.length > 0
+              ? "border-primary bg-primary/15 text-tag-text-orange"
+              : "border-border bg-surface-2 text-text-dim hover:border-text-faint hover:text-text",
+          )}
+        >
+          <SlidersHorizontal className="size-[18px]" aria-hidden />
+          {selectedMedia.length > 0 && (
+            <span className="absolute -right-1 -top-1 grid min-w-[18px] place-items-center rounded-full bg-primary px-1 text-[11px] font-bold leading-[18px] text-on-primary">
+              {selectedMedia.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      <MediaFilterSheet
+        open={filterSheetOpen}
+        onOpenChange={setFilterSheetOpen}
+        groups={medias}
+        selected={selectedMedia}
+        onApply={setSelectedMedia}
       />
 
       {/* Annonce de chargement pour les lecteurs d'écran */}

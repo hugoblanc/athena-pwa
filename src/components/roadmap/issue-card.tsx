@@ -2,7 +2,7 @@ import { ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import type { Issue } from "@/lib/api/types";
 import { cn } from "@/lib/cn";
-import { ClapButton } from "./clap-button";
+import { VoteButtons } from "./vote-buttons";
 
 /** Statuts pour lesquels le vote n'a plus de sens (compteur figé). */
 const NON_VOTABLE = new Set(["done", "rejected"]);
@@ -24,6 +24,8 @@ export function IssueCard({
   className?: string;
 }) {
   const hasId = typeof issue.id === "number";
+  // Score net : `voteCount` (claps − downvotes) si exposé, sinon les claps.
+  const netVotes = issue.voteCount ?? issue.claps ?? 0;
 
   return (
     <article
@@ -48,16 +50,16 @@ export function IssueCard({
         (NON_VOTABLE.has(issue.status ?? "open") ? (
           <span
             className="relative z-10 inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-[13px] font-semibold text-text-faint"
-            aria-label={`${issue.claps ?? 0} vote${(issue.claps ?? 0) > 1 ? "s" : ""}`}
+            aria-label={`${netVotes} vote${netVotes > 1 ? "s" : ""}`}
           >
             <ThumbsUp className="size-[15px]" aria-hidden />
-            {issue.claps ?? 0}
+            {netVotes}
           </span>
         ) : (
           <div className="relative z-10">
-            <ClapButton
+            <VoteButtons
               issueId={issue.id as number}
-              count={issue.claps ?? 0}
+              count={netVotes}
               title={issue.title}
             />
           </div>

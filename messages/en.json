@@ -51,7 +51,10 @@
     "dismissed": "Article hidden",
     "undoDismiss": "Undo",
     "dismissAriaLabel": "Hide this article",
-    "emptyDescDismissed": "You've hidden all articles. Come back later for new content."
+    "emptyDescDismissed": "You've hidden all articles. Come back later for new content.",
+    "mediaFilter": {
+      "open": "Filter by source"
+    }
   },
   "profile": {
     "title": "Profile",
@@ -60,6 +63,7 @@
     "sectionAbout": "About",
     "notifPrefs": "Notification preferences",
     "readingList": "Reading list",
+    "rssFeed": "My RSS feed",
     "darkTheme": "Dark theme",
     "darkThemeToggle": "Enable dark theme",
     "ecoMode": "Eco mode · no images",
