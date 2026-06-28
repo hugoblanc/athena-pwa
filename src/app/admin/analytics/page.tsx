@@ -29,6 +29,9 @@ interface UsageData {
     installed: number;
     installedRate: number;
   };
+  /** Actifs/jour par plateforme (mesure serveur-side), cumul sur la fenêtre. */
+  platforms: { key: string; count: number }[];
+  platformsByDay: Array<{ day: string } & Record<string, number>>;
   byDay: {
     day: string;
     screen_view: number;
@@ -37,6 +40,14 @@ interface UsageData {
     session_start: number;
   }[];
 }
+
+const PLATFORM_LABELS: Record<string, string> = {
+  android_app: "App Android (native)",
+  ios_app: "App iOS (native)",
+  pwa: "PWA (web)",
+  webapp: "Webapp (Angular, legacy)",
+  other: "Autre / accès direct",
+};
 
 interface FunnelData {
   totals: {
@@ -224,7 +235,22 @@ export default async function AdminAnalyticsPage({
         />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="mt-4">
+        <BarTable
+          title="Plateformes — actifs/jour cumulés (mesure serveur-side)"
+          rows={(usage.platforms ?? []).map((p) => ({
+            label: PLATFORM_LABELS[p.key] ?? p.key,
+            count: p.count,
+          }))}
+        />
+        <p className="mt-2 text-xs text-text-faint">
+          Déduit du referer + user-agent côté API (app native incluse, sans
+          instrumentation mobile). Approximation de tendance, pas un compte exact
+          d’utilisateurs uniques.
+        </p>
+      </div>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <BarTable
           title="Écrans les plus vus"
           rows={usage.screens.map((s) => ({ label: s.key, count: s.count }))}
