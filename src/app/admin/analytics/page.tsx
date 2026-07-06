@@ -46,7 +46,9 @@ const PLATFORM_LABELS: Record<string, string> = {
   ios_app: "App iOS (native)",
   pwa: "PWA (web)",
   webapp: "Webapp (Angular, legacy)",
-  other: "Autre / accès direct",
+  mobile_web: "Navigateur mobile",
+  desktop_web: "Navigateur desktop",
+  other: "Autre / non classé",
 };
 
 interface FunnelData {
