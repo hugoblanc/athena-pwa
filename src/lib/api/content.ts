@@ -1,3 +1,4 @@
+import { authFetch } from "./auth-client";
 import { apiGet } from "./client";
 import { CACHE } from "./config";
 import {
@@ -9,6 +10,7 @@ import { decodeEntities } from "../text";
 import type {
   Content,
   ContentLite,
+  IdeaComment,
   ShareableContentResponse,
 } from "./types";
 
@@ -97,4 +99,39 @@ export function getAudioContentUrl(
   id: number | string,
 ): Promise<ShareableContentResponse> {
   return apiGet(`/content/get-audio-content-url-by-id/${id}`, CACHE.detail);
+}
+
+// ───────────────────────── Commentaires d'articles ─────────────────────────
+
+/** Commentaires d'un article (lecture publique). `GET /content/:id/comments`. */
+export function getContentComments(id: number): Promise<IdeaComment[]> {
+  return apiGet<IdeaComment[]>(`/content/${id}/comments`, CACHE.live);
+}
+
+/**
+ * Idem, mais authentifié (Bearer) : le serveur pose `isMine` sur les
+ * commentaires de l'utilisateur → révèle le bouton « supprimer » côté client.
+ */
+export function getContentCommentsAuthed(id: number): Promise<IdeaComment[]> {
+  return authFetch<IdeaComment[]>(`/content/${id}/comments`);
+}
+
+/** Poste un commentaire (connexion requise). `POST /content/:id/comments`. */
+export function postContentComment(
+  id: number,
+  text: string,
+): Promise<IdeaComment> {
+  return authFetch<IdeaComment>(`/content/${id}/comments`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
+}
+
+/** Supprime un de ses commentaires. `DELETE /content/:id/comments/:commentId`. */
+export async function deleteContentComment(
+  id: number,
+  commentId: number,
+): Promise<void> {
+  await authFetch(`/content/${id}/comments/${commentId}`, { method: "DELETE" });
 }

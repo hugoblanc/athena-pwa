@@ -199,4 +199,7 @@ export interface IdeaComment {
     displayName: string | null;
     photoUrl: string | null;
   };
+  /** true si le commentaire appartient à l'utilisateur courant (liste authentifiée).
+   *  Pilote l'affichage du bouton « supprimer » (commentaires d'articles). */
+  isMine?: boolean;
 }

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleBody } from "@/components/content/article-body";
 import { BookmarkButton } from "@/components/content/bookmark-button";
+import { ContentCommentSection } from "@/components/content/content-comment-section";
 import { ReaderScale } from "@/components/content/reader-scale";
 import { ListenButton } from "@/components/content/listen-button";
 import { ReadingProgressBar } from "@/components/content/reading-progress-bar";
@@ -15,10 +16,15 @@ import { ApiError } from "@/lib/api/client";
 import { API_BASE_URL } from "@/lib/api/config";
 import {
   getContent,
+  getContentComments,
   getShareableContent,
   resolveContentId,
 } from "@/lib/api/content";
-import type { Content, ShareableContentResponse } from "@/lib/api/types";
+import type {
+  Content,
+  IdeaComment,
+  ShareableContentResponse,
+} from "@/lib/api/types";
 import { formatDate, readingTimeFromText } from "@/lib/format";
 import { mediaLogoSrc } from "@/lib/media";
 import { buildShareUrl, sharePath } from "@/lib/site";
@@ -49,6 +55,15 @@ async function loadShareable(
     return await getShareableContent(key, contentId);
   } catch {
     return null;
+  }
+}
+
+/** Commentaires initiaux (rendu serveur, anonyme). Tolérant : [] si indispo. */
+async function loadComments(internalId: number): Promise<IdeaComment[]> {
+  try {
+    return await getContentComments(internalId);
+  } catch {
+    return [];
   }
 }
 
@@ -96,6 +111,8 @@ export default async function ContentDetailPage({
     loadContent(key, id),
     loadShareable(key, id),
   ]);
+  // Commentaires : dépendent de l'id interne résolu → chargés ensuite (tolérant).
+  const initialComments = await loadComments(content.id);
 
   const isVideo = content.contentType === "YOUTUBE";
   const sourceTitle = content.metaMedia?.title ?? "Média libre";
@@ -230,6 +247,9 @@ export default async function ContentDetailPage({
           . Soutenez les médias libres en consultant la source originale.
         </footer>
       )}
+
+      {/* Fil de commentaires (communautaire) — lecture publique, écriture gatée. */}
+      <ContentCommentSection contentId={content.id} initialComments={initialComments} />
 
       {/* Opt-in notif après ~12 s de lecture (non bloquant). */}
       <NotifyOptInSheet mediaTitle={sourceTitle} mediaKey={content.metaMedia?.key ?? key} />
