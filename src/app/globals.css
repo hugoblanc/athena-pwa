@@ -112,7 +112,9 @@ body {
 /* ---- styles éditoriaux « prose » (corps d'article + pages statiques) ---- */
 .prose {
   color: var(--text);
-  font-size: 16px;
+  /* Taille pilotée par la préférence de lecture (#124) ; fallback 1 hors lecteur
+     (pages statiques). Les titres/marges en `em` suivent proportionnellement. */
+  font-size: calc(16px * var(--reader-font-scale, 1));
   line-height: 1.7;
 }
 .prose > * + * {

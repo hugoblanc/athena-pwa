@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleBody } from "@/components/content/article-body";
 import { BookmarkButton } from "@/components/content/bookmark-button";
+import { ReaderScale } from "@/components/content/reader-scale";
 import { ListenButton } from "@/components/content/listen-button";
 import { ReadingProgressBar } from "@/components/content/reading-progress-bar";
 import { NotifyOptInSheet } from "@/components/notif/notify-opt-in-sheet";
@@ -102,6 +103,9 @@ export default async function ContentDetailPage({
   const heroImage = share?.image?.url ?? content.image?.url;
   const originalUrl = share?.originalUrl;
   const minutes = readingTimeFromText(content.plainText);
+  // Réglage de taille du texte pertinent seulement quand il y a un vrai corps
+  // éditorial à lire (article WordPress non vide), pas pour une vidéo/fallback.
+  const hasArticleText = !isVideo && Boolean(content.description?.trim());
   const href = `/content/${key}/${id}`;
   const shareUrl = buildShareUrl(sharePath.content(key, id));
 
@@ -201,8 +205,15 @@ export default async function ContentDetailPage({
         )}
       </div>
 
-      {/* Corps éditorial (Server Component) */}
-      <ArticleBody content={content} originalUrl={originalUrl} />
+      {/* Corps éditorial (Server Component). Pour un article, on l'enveloppe du
+          réglage de taille du texte (#124) ; sinon rendu direct. */}
+      {hasArticleText ? (
+        <ReaderScale>
+          <ArticleBody content={content} originalUrl={originalUrl} />
+        </ReaderScale>
+      ) : (
+        <ArticleBody content={content} originalUrl={originalUrl} />
+      )}
 
       {/* Pied : valorisation du média source */}
       {originalUrl && (
