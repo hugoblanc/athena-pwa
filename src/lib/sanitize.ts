@@ -9,7 +9,7 @@ export function sanitizeHtml(html: string): string {
     ALLOWED_TAGS: [
       "p", "br", "strong", "em", "b", "i", "u", "a", "ul", "ol", "li",
       "blockquote", "h2", "h3", "h4", "figure", "figcaption", "img",
-      "iframe", "pre", "code", "hr", "span",
+      "pre", "code", "hr", "span",
     ],
     ALLOWED_ATTR: ["href", "src", "alt", "title", "target", "rel", "width", "height", "allowfullscreen", "frameborder"],
     ALLOWED_URI_REGEXP: /^(https?:|mailto:|\/)/i,

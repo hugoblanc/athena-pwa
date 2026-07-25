@@ -1,4 +1,4 @@
-import { apiGet } from "./client";
+import { apiGet, segment } from "./client";
 import { CACHE } from "./config";
 import {
   fromPaginationPage,
@@ -32,7 +32,7 @@ export async function listLawProposals(
 
 /** Détail d'une proposition. `GET /law-proposal/:numero` */
 export function getLawProposal(numero: string): Promise<LawProposal> {
-  return apiGet<LawProposal>(`/law-proposal/${numero}`, CACHE.detail);
+  return apiGet<LawProposal>(`/law-proposal/${segment(numero)}`, CACHE.detail);
 }
 
 /** Statistiques. `GET /law-proposal/stats` */

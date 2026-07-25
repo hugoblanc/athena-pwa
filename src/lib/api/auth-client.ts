@@ -1,8 +1,7 @@
 "use client";
 
 import { auth } from "@/lib/firebase";
-import { ApiError, type RequestOptions } from "./client";
-import { API_BASE_URL } from "./config";
+import { ApiError, resolveApiUrl, type RequestOptions } from "./client";
 
 /**
  * Fetch authentifié (CLIENT only) vers les endpoints protégés `/auth/*`.
@@ -16,7 +15,7 @@ export async function authFetch<T>(
   const user = auth?.currentUser;
   if (!user) throw new ApiError(401, path, "Utilisateur non connecté");
 
-  const url = new URL(path.startsWith("/") ? path : `/${path}`, API_BASE_URL);
+  const url = resolveApiUrl(path);
   if (query) {
     for (const [k, v] of Object.entries(query)) {
       if (v != null) url.searchParams.set(k, Array.isArray(v) ? v.join(",") : String(v));

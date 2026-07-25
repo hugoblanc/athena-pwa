@@ -11,9 +11,31 @@ const nextConfig: NextConfig = {
   // PostHog (reverse-proxy /ingest) : ne pas ajouter de slash final, sinon le
   // POST des events est cassé par une redirection.
   skipTrailingSlashRedirect: true,
-  // Images distantes (logos médias, miniatures de contenu).
-  images: {
-    remotePatterns: [{ protocol: "https", hostname: "**" }],
+  // Aucun composant `next/image` dans l'app (que des <img> bruts) : on désactive
+  // l'optimiseur, sinon /_next/image reste un proxy d'images ouvert sur tout HTTPS.
+  images: { unoptimized: true },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          // 0 et non 1 : l'auditeur XSS legacy introduit ses propres failles,
+          // la CSP ci-dessous prend le relais.
+          { key: "X-XSS-Protection", value: "0" },
+          {
+            key: "Content-Security-Policy",
+            value: "frame-ancestors 'none'; object-src 'none'; base-uri 'self'",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains",
+          },
+        ],
+      },
+    ];
   },
   // Alias court et partageable des propositions de loi. `/loi/1234` sert la même
   // page que `/propositions/1234` sans redirection visible (l'URL /loi reste

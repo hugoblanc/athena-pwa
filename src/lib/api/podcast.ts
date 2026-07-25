@@ -1,4 +1,4 @@
-import { apiGet } from "./client";
+import { apiGet, segment } from "./client";
 import { CACHE } from "./config";
 import { fromMetaPage, type MetaPage, type UnifiedPage } from "./pagination";
 import { decodeEntities } from "../text";
@@ -31,20 +31,20 @@ export async function listPodcasts(params: {
 
 /** Détail d'un podcast (avec son `content`). `GET /podcast/:id` */
 export async function getPodcast(id: number | string): Promise<Podcast> {
-  return decodePodcast(await apiGet<Podcast>(`/podcast/${id}`, CACHE.detail));
+  return decodePodcast(await apiGet<Podcast>(`/podcast/${segment(id)}`, CACHE.detail));
 }
 
 /** Podcast suivant. `GET /podcast/:id/next` */
 export async function getNextPodcast(id: number | string): Promise<Podcast> {
   return decodePodcast(
-    await apiGet<Podcast>(`/podcast/${id}/next`, CACHE.detail),
+    await apiGet<Podcast>(`/podcast/${segment(id)}/next`, CACHE.detail),
   );
 }
 
 /** Podcast précédent. `GET /podcast/:id/previous` */
 export async function getPreviousPodcast(id: number | string): Promise<Podcast> {
   return decodePodcast(
-    await apiGet<Podcast>(`/podcast/${id}/previous`, CACHE.detail),
+    await apiGet<Podcast>(`/podcast/${segment(id)}/previous`, CACHE.detail),
   );
 }
 
@@ -54,7 +54,7 @@ export async function getPodcastByContent(
 ): Promise<Podcast | null> {
   return decodePodcast(
     await apiGet<Podcast | null>(
-      `/podcast/content/${contentId}`,
+      `/podcast/content/${segment(contentId)}`,
       CACHE.detail,
     ),
   );

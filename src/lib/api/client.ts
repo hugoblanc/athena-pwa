@@ -11,11 +11,37 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Encode un segment de chemin d'API. Les clés/ids viennent d'URLs, de params de
+ * route et de Server Actions : sans encodage, un `../` ou un `?` réécrit
+ * l'endpoint appelé.
+ */
+export function segment(value: string | number): string {
+  return encodeURIComponent(String(value));
+}
+
+export function positiveInt(value: number, label: string): number {
+  if (!Number.isInteger(value) || value < 1) {
+    throw new Error(`${label} invalide : ${value}`);
+  }
+  return value;
+}
+
+/**
+ * Résout `path` contre l'API Athena et refuse tout ce qui en sort. Un `path`
+ * protocole-relatif (`//evil.com/x`) ou absolu provoquerait une SSRF côté
+ * serveur et une fuite du Bearer Firebase côté client.
+ */
+export function resolveApiUrl(path: string): URL {
+  const url = new URL(path.startsWith("/") ? path : `/${path}`, API_BASE_URL);
+  if (url.origin !== new URL(API_BASE_URL).origin) {
+    throw new ApiError(400, path, `Chemin d'API hors domaine : ${path}`);
+  }
+  return url;
+}
+
 function buildUrl(path: string, query?: QueryParams): string {
-  const url = new URL(
-    path.startsWith("/") ? path : `/${path}`,
-    API_BASE_URL,
-  );
+  const url = resolveApiUrl(path);
   if (query) {
     for (const [k, v] of Object.entries(query)) {
       if (v == null) continue;

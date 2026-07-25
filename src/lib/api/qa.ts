@@ -1,4 +1,4 @@
-import { apiGet, parseJsonField } from "./client";
+import { apiGet, parseJsonField, segment } from "./client";
 import { API_BASE_URL, CACHE } from "./config";
 import {
   fromPaginationPage,
@@ -26,13 +26,13 @@ export async function askQuestion(
  * EventSource/headers — cf. AUDIT §6).
  */
 export function qaStreamUrl(jobId: string): string {
-  return `${API_BASE_URL}/qa/stream/${jobId}`;
+  return `${API_BASE_URL}/qa/stream/${segment(jobId)}`;
 }
 
 /** Résultat final d'une réponse. `GET /qa/result/:jobId` */
 export async function getQaResult(jobId: string): Promise<QaHistoryItem> {
   const raw = await apiGet<QaHistoryItem & { sources: unknown }>(
-    `/qa/result/${jobId}`,
+    `/qa/result/${segment(jobId)}`,
     CACHE.live,
   );
   return { ...raw, sources: parseJsonField<QaSource[]>(raw.sources, []) };

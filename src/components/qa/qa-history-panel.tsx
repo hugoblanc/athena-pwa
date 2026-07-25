@@ -6,6 +6,7 @@ import { History, Trash2, X } from "lucide-react";
 import { useCallback, useState, useTransition } from "react";
 import { IconButton } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { segment } from "@/lib/api/client";
 import { API_BASE_URL } from "@/lib/api/config";
 import { getQaHistory } from "@/lib/api/qa";
 import { formatRelative } from "@/lib/format";
@@ -15,7 +16,7 @@ const PAGE_SIZE = 20;
 
 /** Supprime un item d'historique. `DELETE /qa/history/:id` */
 async function deleteHistoryItem(id: string): Promise<void> {
-  const res = await fetch(`${API_BASE_URL}/qa/history/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/qa/history/${segment(id)}`, {
     method: "DELETE",
   });
   if (!res.ok) throw new Error(`QA delete: ${res.status}`);

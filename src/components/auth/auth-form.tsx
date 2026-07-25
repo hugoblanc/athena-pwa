@@ -46,7 +46,15 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const copy = COPY[mode];
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/";
+  // Seuls les chemins relatifs sont acceptés : `//evil.com` et `/\evil.com` sont
+  // interprétés comme des URLs absolues par les navigateurs (open redirect).
+  const rawRedirect = searchParams.get("redirect") || "/";
+  const redirect =
+    rawRedirect.startsWith("/") &&
+    !rawRedirect.startsWith("//") &&
+    !rawRedirect.startsWith("/\\")
+      ? rawRedirect
+      : "/";
 
   const { signInWithGoogle, signInWithEmail, register } = useAuth();
 

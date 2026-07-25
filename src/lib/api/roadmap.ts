@@ -1,6 +1,6 @@
 import { getAnonKey } from "../anon-key";
 import { authFetch } from "./auth-client";
-import { apiGet } from "./client";
+import { apiGet, segment } from "./client";
 import { API_BASE_URL, CACHE } from "./config";
 import type { IdeaComment, Issue } from "./types";
 
@@ -36,7 +36,7 @@ export async function createIssue(input: {
 
 /** Incrémente le vote d'une idée. `POST /issues/:id/clap` (public, dédup serveur). */
 export async function clapIssue(issueId: number): Promise<Issue> {
-  const res = await fetch(`${API_BASE_URL}/issues/${issueId}/clap`, {
+  const res = await fetch(`${API_BASE_URL}/issues/${segment(issueId)}/clap`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...anonHeader() },
   });
@@ -46,7 +46,7 @@ export async function clapIssue(issueId: number): Promise<Issue> {
 
 /** Retire le vote d'une idée (toggle). `DELETE /issues/:id/clap`. */
 export async function unclapIssue(issueId: number): Promise<Issue> {
-  const res = await fetch(`${API_BASE_URL}/issues/${issueId}/clap`, {
+  const res = await fetch(`${API_BASE_URL}/issues/${segment(issueId)}/clap`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json", ...anonHeader() },
   });
@@ -60,7 +60,7 @@ export async function unclapIssue(issueId: number): Promise<Issue> {
  * Renvoie l'idée avec `voteCount` (net) à jour.
  */
 export async function downvoteIssue(issueId: number): Promise<Issue> {
-  return authFetch<Issue>(`/issues/${issueId}/downvote`, {
+  return authFetch<Issue>(`/issues/${segment(issueId)}/downvote`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
   });
@@ -68,7 +68,7 @@ export async function downvoteIssue(issueId: number): Promise<Issue> {
 
 /** Retire le vote contre (toggle). `DELETE /issues/:id/downvote` (auth requise). */
 export async function removeDownvote(issueId: number): Promise<Issue> {
-  return authFetch<Issue>(`/issues/${issueId}/downvote`, {
+  return authFetch<Issue>(`/issues/${segment(issueId)}/downvote`, {
     method: "DELETE",
   });
 }
@@ -80,12 +80,12 @@ export async function listIssues(): Promise<Issue[]> {
 
 /** Détail d'une idée. `GET /issues/:id`. */
 export async function getIssue(id: number): Promise<Issue> {
-  return apiGet<Issue>(`/issues/${id}`, CACHE.detail);
+  return apiGet<Issue>(`/issues/${segment(id)}`, CACHE.detail);
 }
 
 /** Commentaires d'une idée (public). `GET /issues/:id/comments`. */
 export async function getComments(id: number): Promise<IdeaComment[]> {
-  return apiGet<IdeaComment[]>(`/issues/${id}/comments`, CACHE.live);
+  return apiGet<IdeaComment[]>(`/issues/${segment(id)}/comments`, CACHE.live);
 }
 
 /** Poste un commentaire (connexion requise). `POST /issues/:id/comments`. */
@@ -93,7 +93,7 @@ export async function postComment(
   id: number,
   text: string,
 ): Promise<IdeaComment> {
-  return authFetch<IdeaComment>(`/issues/${id}/comments`, {
+  return authFetch<IdeaComment>(`/issues/${segment(id)}/comments`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ text }),

@@ -53,7 +53,7 @@ npx tsc --noEmit # typecheck
 ## État / reste à faire
 
 - 16 écrans codés, build prod OK contre l'API de prod.
-- **À faire** : déploiement CapRover (VPS `54.37.226.134`, `output: standalone`) ; wiring final
+- **À faire** : déploiement CapRover (VPS `<VPS_IP>`, `output: standalone`) ; wiring final
   notif-préférences + roadmap sur les nouveaux endpoints backend ; QA device (install + push iOS).
 - Migration de la base installée (différée) : après prod, banner + notif douce dans l'app Ionic
   existante (pas de coquille WebView). Comptes migrent ~gratuitement (Firebase centralisé).
