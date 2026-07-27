@@ -18,11 +18,37 @@
  */
 import posthog from "posthog-js";
 
-const token = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN;
+/**
+ * Hôte de prod canonique de la PWA (cf. [[athena-deploiement-prod]]).
+ * Sert à borner le repli sur `FALLBACK_TOKEN` ci-dessous.
+ */
+const PRODUCTION_HOSTNAME = "athena-app.xyz";
+
+/**
+ * Token PUBLIC du projet PostHog « Athena » (Cloud EU). Il est de toute façon
+ * visible dans le bundle de chaque visiteur : PostHog documente le project API
+ * token comme non secret (il n'autorise que l'ingestion, aucune lecture).
+ *
+ * Pourquoi en dur : les variables `NEXT_PUBLIC_*` sont inlinées AU BUILD, donc un
+ * oubli dans les App Configs CapRover (ou un `--build-arg` manquant) coupe
+ * silencieusement toute la mesure — c'est exactement ce qui s'est produit, sans
+ * la moindre erreur visible. Ce repli rend l'instrumentation increvable.
+ *
+ * Athena étant open source, le repli est **borné à l'hôte de prod** : un fork
+ * auto-hébergé n'enverra jamais ses events dans notre projet, il doit poser son
+ * propre `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` (qui reste prioritaire partout).
+ */
+const FALLBACK_TOKEN = "phc_C6vX44DZFD4TCEF3vb2yNj3wnn2mFFGXrVW86DoATXQF";
+
+const hostname =
+  typeof window !== "undefined" ? window.location.hostname : undefined;
+
+const token =
+  process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN ||
+  (hostname === PRODUCTION_HOSTNAME ? FALLBACK_TOKEN : undefined);
 
 const isLocalhost =
-  typeof window !== "undefined" &&
-  /^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname);
+  hostname !== undefined && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(hostname);
 
 if (token && typeof window !== "undefined" && !isLocalhost) {
   posthog.init(token, {
